@@ -1,0 +1,6 @@
+@AIFantasyPremierLeague.API_HostAddress = http://localhost:5110
+
+GET {{AIFantasyPremierLeague.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

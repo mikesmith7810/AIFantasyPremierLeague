@@ -1,0 +1,1 @@
+public record Team (string Name);
