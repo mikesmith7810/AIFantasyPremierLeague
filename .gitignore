@@ -53,3 +53,26 @@ dkms.conf
 
 # debug information files
 *.dwo
+# Binary and Object directories
+[Bb]in/
+[Oo]bj/
+
+# Your specific directory
+AIFantasyPremierLeague.API/obj/
+
+# NuGet cache files
+.nuget/
+*.nupkg
+*.snupkg
+
+# IDE files
+*.user
+*.suo
+*.sln.docstates
+
+# Visual Studio Code files
+.vscode/
+
+# Other common files to ignore
+TestResults/
+.vs/
