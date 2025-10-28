@@ -3,26 +3,42 @@ using Moq;
 using FluentAssertions;
 using AIFantasyPremierLeague.API.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using AIFantasyPremierLeague.API.Services;
 
-namespace AIFantasyPremierLeague.Tests.Controllers;
+namespace AIFantasyPremierLeague.Tests;
+
 public class TeamControllerTest
 {
+    private readonly Mock<ITeamService> _teamService;
+    private readonly TeamController _teamController;
+
+
+    public TeamControllerTest()
+    {
+        _teamService = new Mock<ITeamService>();
+
+        _teamController = new TeamController(_teamService.Object);
+    }
+
     [Fact]
     public void GetTeams_ReturnsAllTeams()
     {
-        var teamController = new TeamController();
 
-        ActionResult<IEnumerable<Team>> response = teamController.GetTeams();
+        _teamService.Setup(teamService => teamService.GetTeams())
+                .Returns([new Team("Mike"), new Team("Sam")]);
+
+        ActionResult<IEnumerable<Team>> response = _teamController.GetTeams();
 
         var result = response.Result as OkObjectResult;
         var teams = result?.Value as IEnumerable<Team>;
 
         teams.Should().HaveCount(2);
 
-        // Check that teams are in the expected order
         teams.Should().ContainInOrder(
             new Team("Mike"),
             new Team("Sam")
         );
+
+        _teamService.Verify(teamService => teamService.GetTeams(), Times.Once());
     }
 }
