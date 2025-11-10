@@ -1,1 +1,1 @@
-public record Team(string Name);
+public record Team(int Id, string Name);

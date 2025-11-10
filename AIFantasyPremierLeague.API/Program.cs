@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 
 // Register your custom services for dependency injection
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IPlayerService, PlayerService>();
 
 var app = builder.Build();
 

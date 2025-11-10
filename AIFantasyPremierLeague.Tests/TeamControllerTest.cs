@@ -23,9 +23,8 @@ public class TeamControllerTest
     [Fact]
     public void GetTeams_ReturnsAllTeams()
     {
-
         _teamService.Setup(teamService => teamService.GetTeams())
-                .Returns([new Team("Mike"), new Team("Sam")]);
+                .Returns([new Team(1, "Mike"), new Team(2, "Sam")]);
 
         ActionResult<IEnumerable<Team>> response = _teamController.GetTeams();
 
@@ -35,10 +34,10 @@ public class TeamControllerTest
         teams.Should().HaveCount(2);
 
         teams.Should().ContainInOrder(
-            new Team("Mike"),
-            new Team("Sam")
+            new Team(1, "Mike"),
+            new Team(2, "Sam")
         );
 
-        _teamService.Verify(teamService => teamService.GetTeams(), Times.Once());
+        _teamService.Verify(teamService => teamService.GetTeams(), Times.Once);
     }
 }

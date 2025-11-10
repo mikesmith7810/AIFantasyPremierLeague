@@ -1,0 +1,1 @@
+public record Player(string Name, int TeamId);
