@@ -1,10 +1,19 @@
+using AIFantasyPremierLeague.API.Models;
+using AIFantasyPremierLeague.API.Repository;
+using AIFantasyPremierLeague.API.Repository.Data;
+
 namespace AIFantasyPremierLeague.API.Services;
 public class PlayerService : IPlayerService
 {
-    public IEnumerable<Player> GetPlayers()
+    private readonly IRepository<PlayerEntity> _playerRepository;
+    public PlayerService(IRepository<PlayerEntity> playerRepository)
     {
-        List<Player> players = [new Player("Johan Cruyff", 2), new Player("Sam Smith", 1)];
-        return players;
+        _playerRepository = playerRepository;
+    }
+    public async Task<IEnumerable<Player>> GetPlayers()
+    {
+        IEnumerable<PlayerEntity> players = await _playerRepository.GetAllAsync();
+        return players.Select(playerEntity => new Player(playerEntity.Id, playerEntity.Name, playerEntity.Team));
     }
 }
 

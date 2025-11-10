@@ -1,10 +1,23 @@
+using System.Threading.Tasks;
+using AIFantasyPremierLeague.API.Models;
+using AIFantasyPremierLeague.API.Repository;
+using AIFantasyPremierLeague.API.Repository.Data;
+
 namespace AIFantasyPremierLeague.API.Services;
 public class TeamService : ITeamService
 {
-    public IEnumerable<Team> GetTeams()
+    private readonly IRepository<TeamEntity> _teamRepository;
+
+    public TeamService(IRepository<TeamEntity> teamRepository)
     {
-        List<Team> teams = [new Team(1, "Mike"), new Team(2, "Sam")];
-        return teams;
+        _teamRepository = teamRepository;
+    }
+
+    public async Task<IEnumerable<Team>> GetTeamsAsync()
+    {
+        IEnumerable<TeamEntity> teams = await _teamRepository.GetAllAsync();
+
+        return teams.Select(teamEntity => new Team(teamEntity.Id, teamEntity.Name));
     }
 }
 

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using AIFantasyPremierLeague.API.Models;
 using AIFantasyPremierLeague.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,9 +21,14 @@ public class TeamController : ControllerBase
 
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
-    public ActionResult<IEnumerable<Team>> GetTeams()
+    public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
     {
-        IEnumerable<Team> teams = _teamService.GetTeams();
+        IEnumerable<Team> teams = await _teamService.GetTeamsAsync();
+
+        if (teams == null || !teams.Any())
+        {
+            return NotFound();
+        }
 
         return Ok(teams);
     }

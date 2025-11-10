@@ -4,6 +4,8 @@ using FluentAssertions;
 using AIFantasyPremierLeague.API.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using AIFantasyPremierLeague.API.Services;
+using AIFantasyPremierLeague.API.Models;
+using System.Threading.Tasks;
 
 namespace AIFantasyPremierLeague.Tests;
 
@@ -21,12 +23,18 @@ public class PlayerControllerTest
     }
 
     [Fact]
-    public void GetPlayers_ReturnsAllPlayers()
+    public async Task GetPlayers_ReturnsAllPlayers()
     {
-        _playerService.Setup(playerService => playerService.GetPlayers())
-                .Returns([new Player("Johan Cruyff", 2), new Player("Sam Smith", 1)]);
+        var mockPlayers = new List<Player>
+        {
+            new("player1", "Johan Cruyff", "team2"),
+            new("player2", "Sam Smith", "team1")
+        };
 
-        ActionResult<IEnumerable<Player>> response = _playerController.GetPlayers();
+        _playerService.Setup(playerService => playerService.GetPlayers())
+                .ReturnsAsync(mockPlayers);
+
+        ActionResult<IEnumerable<Player>> response = await _playerController.GetPlayers();
 
         var result = response.Result as OkObjectResult;
         var players = result?.Value as IEnumerable<Player>;
@@ -34,7 +42,7 @@ public class PlayerControllerTest
         players.Should().HaveCount(2);
 
         players.Should().ContainInOrder(
-            new Player("Johan Cruyff", 2), new Player("Sam Smith", 1)
+            new Player("player1", "Johan Cruyff", "team2"), new Player("player2", "Sam Smith", "team1")
         );
 
         _playerService.Verify(playerService => playerService.GetPlayers(), Times.Once);

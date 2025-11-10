@@ -1,5 +1,7 @@
+using AIFantasyPremierLeague.API.Models;
+
 namespace AIFantasyPremierLeague.API.Services;
 public interface ITeamService
 {
-    IEnumerable<Team> GetTeams();
+    Task<IEnumerable<Team>> GetTeamsAsync();
 }

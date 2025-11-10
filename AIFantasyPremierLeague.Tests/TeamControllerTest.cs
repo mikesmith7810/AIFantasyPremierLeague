@@ -4,6 +4,8 @@ using FluentAssertions;
 using AIFantasyPremierLeague.API.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using AIFantasyPremierLeague.API.Services;
+using AIFantasyPremierLeague.API.Models;
+using System.Threading.Tasks;
 
 namespace AIFantasyPremierLeague.Tests;
 
@@ -21,12 +23,18 @@ public class TeamControllerTest
     }
 
     [Fact]
-    public void GetTeams_ReturnsAllTeams()
+    public async Task GetTeams_ReturnsAllTeams()
     {
-        _teamService.Setup(teamService => teamService.GetTeams())
-                .Returns([new Team(1, "Mike"), new Team(2, "Sam")]);
+        var mockTeams = new List<Team>
+        {
+            new("team1", "Barcelona"),
+            new("team2", "Real Madrid")
+        };
 
-        ActionResult<IEnumerable<Team>> response = _teamController.GetTeams();
+        _teamService.Setup(teamService => teamService.GetTeamsAsync())
+                .ReturnsAsync(mockTeams);
+
+        ActionResult<IEnumerable<Team>> response = await _teamController.GetTeams();
 
         var result = response.Result as OkObjectResult;
         var teams = result?.Value as IEnumerable<Team>;
@@ -34,10 +42,10 @@ public class TeamControllerTest
         teams.Should().HaveCount(2);
 
         teams.Should().ContainInOrder(
-            new Team(1, "Mike"),
-            new Team(2, "Sam")
+            new Team("team1", "Barcelona"),
+            new Team("team2", "Real Madrid")
         );
 
-        _teamService.Verify(teamService => teamService.GetTeams(), Times.Once);
+        _teamService.Verify(teamService => teamService.GetTeamsAsync(), Times.Once);
     }
 }

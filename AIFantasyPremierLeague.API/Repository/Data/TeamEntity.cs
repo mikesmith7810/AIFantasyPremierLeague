@@ -6,7 +6,7 @@ public class TeamEntity
 
 {
     [Key]
-    public int Id { get; set; }
+    public required string Id { get; set; }
 
     [Required]
     [StringLength(100)]

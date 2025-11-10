@@ -1,3 +1,3 @@
 namespace AIFantasyPremierLeague.API.Models;
 
-public record Team(int Id, string Name);
+public record Team(string Id, string Name);

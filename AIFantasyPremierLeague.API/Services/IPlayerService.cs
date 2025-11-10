@@ -1,5 +1,7 @@
+using AIFantasyPremierLeague.API.Models;
+
 namespace AIFantasyPremierLeague.API.Services;
 public interface IPlayerService
 {
-    IEnumerable<Player> GetPlayers();
+    Task<IEnumerable<Player>> GetPlayers();
 }
