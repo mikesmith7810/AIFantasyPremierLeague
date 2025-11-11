@@ -1,3 +1,4 @@
+using AIFantasyPremierLeague.API.Exceptions;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Config;
 using AIFantasyPremierLeague.API.Services;
@@ -23,11 +24,16 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<NotFoundFilter>();
+});
 
 // Register your custom services for dependency injection
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IPlayerHistoryService, PlayerHistoryService>();
 
 var app = builder.Build();
 

@@ -2,19 +2,21 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AIFantasyPremierLeague.API.Repository.Data;
 
-public class PlayerEntity
+public class PlayerHistoryEntity
 
 {
     [Key]
     public required string Id { get; set; }
 
     [Required]
-    [StringLength(100)]
-    public required string Name { get; set; }
+    public required int Season { get; set; }
+
+    [Required]
+    public required int Week { get; set; }
 
     [Required]
     public required string Team { get; set; }
 
     [Required]
-    public required double Value { get; set; }
+    public required int Points { get; set; }
 }
