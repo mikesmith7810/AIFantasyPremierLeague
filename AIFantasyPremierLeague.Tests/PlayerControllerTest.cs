@@ -27,8 +27,8 @@ public class PlayerControllerTest
     {
         var mockPlayers = new List<Player>
         {
-            new("player1", "Johan Cruyff", "team2"),
-            new("player2", "Sam Smith", "team1")
+            new("player1", "Johan Cruyff", "team2",10),
+            new("player2", "Sam Smith", "team1",20)
         };
 
         _playerService.Setup(playerService => playerService.GetPlayersAsync())
@@ -41,7 +41,7 @@ public class PlayerControllerTest
         players.Should().HaveCount(2);
 
         players.Should().ContainInOrder(
-            new Player("player1", "Johan Cruyff", "team2"), new Player("player2", "Sam Smith", "team1")
+            new Player("player1", "Johan Cruyff", "team2", 10), new Player("player2", "Sam Smith", "team1", 20)
         );
 
         _playerService.Verify(playerService => playerService.GetPlayersAsync(), Times.Once);
@@ -50,7 +50,7 @@ public class PlayerControllerTest
     [Fact]
     public async Task AddPlayer_ReturnsCreated()
     {
-        Player player1 = new("player1", "Lamine Yamal", "team2");
+        Player player1 = new("player1", "Lamine Yamal", "team2", 10);
 
         _playerService.Setup(playerService => playerService.AddPlayerAsync(player1))
                 .ReturnsAsync(player1);
@@ -67,7 +67,7 @@ public class PlayerControllerTest
     [Fact]
     public async Task GetPlayer_ReturnsSuccess()
     {
-        Player player1 = new("player1", "Lamine Yamal", "team2");
+        Player player1 = new("player1", "Lamine Yamal", "team2", 10);
 
         _playerService.Setup(playerService => playerService.GetPlayerAsync("player1"))
                 .ReturnsAsync(player1);

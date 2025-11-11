@@ -28,8 +28,8 @@ public class PlayerServiceTest
     {
         var mockPlayerEntities = new List<PlayerEntity>
         {
-            new() { Id = "player1", Name = "Harry Kane", Team="team1" },
-            new() { Id = "player2", Name = "Declan Rice", Team="team2" }
+            new() { Id = "player1", Name = "Harry Kane", Team="team1", Value=20 },
+            new() { Id = "player2", Name = "Declan Rice", Team="team2" , Value=30}
         };
 
         _playerRepository.Setup(playerRepository => playerRepository.GetAllAsync())
@@ -40,14 +40,14 @@ public class PlayerServiceTest
         players.Should().HaveCount(2);
 
         players.Should().ContainInOrder(
-            new Player("player1", "Harry Kane", "team1"), new Player("player2", "Declan Rice", "team2")
+            new Player("player1", "Harry Kane", "team1", 20), new Player("player2", "Declan Rice", "team2", 30)
         );
     }
 
     [Fact]
     public async Task GetPlayer_ReturnsPlayer()
     {
-        PlayerEntity mockPlayer = new() { Id = "player1", Name = "Harry Kane", Team = "team1" };
+        PlayerEntity mockPlayer = new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20 };
 
         _playerRepository.Setup(playerRepository => playerRepository.GetByIdAsync("player1"))
                 .ReturnsAsync(mockPlayer);
@@ -56,14 +56,14 @@ public class PlayerServiceTest
 
         player.Should().NotBeNull();
         player.Should().BeEquivalentTo(
-            new Player("player1", "Harry Kane", "team1"));
+            new Player("player1", "Harry Kane", "team1", 20));
     }
 
     [Fact]
     public async Task AddPlayer_ReturnsPlayer()
     {
-        Player mockPlayer = new Player("player1", "Harry Kane", "team1");
-        PlayerEntity mockPlayerEntity = new() { Id = "player1", Name = "Harry Kane", Team = "team1" };
+        Player mockPlayer = new Player("player1", "Harry Kane", "team1", 20);
+        PlayerEntity mockPlayerEntity = new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20 };
 
         _playerRepository.Setup(playerRepository => playerRepository.AddAsync(It.IsAny<PlayerEntity>()))
             .ReturnsAsync((PlayerEntity entity) => entity);
@@ -72,7 +72,7 @@ public class PlayerServiceTest
 
         player.Should().NotBeNull();
         player.Should().BeEquivalentTo(
-            new Player("player1", "Harry Kane", "team1"));
+            new Player("player1", "Harry Kane", "team1", 20));
     }
 
     [Fact]
