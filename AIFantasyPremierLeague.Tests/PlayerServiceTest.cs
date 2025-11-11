@@ -35,12 +35,43 @@ public class PlayerServiceTest
         _playerRepository.Setup(playerRepository => playerRepository.GetAllAsync())
                 .ReturnsAsync(mockPlayerEntities);
 
-        IEnumerable<Player> players = await _playerService.GetPlayers();
+        IEnumerable<Player> players = await _playerService.GetPlayersAsync();
 
         players.Should().HaveCount(2);
 
         players.Should().ContainInOrder(
             new Player("player1", "Harry Kane", "team1"), new Player("player2", "Declan Rice", "team2")
         );
+    }
+
+    [Fact]
+    public async Task GetPlayer_ReturnsPlayer()
+    {
+        PlayerEntity mockPlayer = new() { Id = "player1", Name = "Harry Kane", Team = "team1" };
+
+        _playerRepository.Setup(playerRepository => playerRepository.GetByIdAsync("player1"))
+                .ReturnsAsync(mockPlayer);
+
+        Player player = await _playerService.GetPlayerAsync("player1");
+
+        player.Should().NotBeNull();
+        player.Should().BeEquivalentTo(
+            new Player("player1", "Harry Kane", "team1"));
+    }
+
+    [Fact]
+    public async Task AddPlayer_ReturnsPlayer()
+    {
+        Player mockPlayer = new Player("player1", "Harry Kane", "team1");
+        PlayerEntity mockPlayerEntity = new() { Id = "player1", Name = "Harry Kane", Team = "team1" };
+
+        _playerRepository.Setup(playerRepository => playerRepository.AddAsync(It.IsAny<PlayerEntity>()))
+            .ReturnsAsync((PlayerEntity entity) => entity);
+
+        Player player = await _playerService.AddPlayerAsync(mockPlayer);
+
+        player.Should().NotBeNull();
+        player.Should().BeEquivalentTo(
+            new Player("player1", "Harry Kane", "team1"));
     }
 }

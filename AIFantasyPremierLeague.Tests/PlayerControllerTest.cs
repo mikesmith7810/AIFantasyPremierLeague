@@ -31,13 +31,12 @@ public class PlayerControllerTest
             new("player2", "Sam Smith", "team1")
         };
 
-        _playerService.Setup(playerService => playerService.GetPlayers())
+        _playerService.Setup(playerService => playerService.GetPlayersAsync())
                 .ReturnsAsync(mockPlayers);
 
         ActionResult<IEnumerable<Player>> response = await _playerController.GetPlayers();
-
-        var result = response.Result as OkObjectResult;
-        var players = result?.Value as IEnumerable<Player>;
+        OkObjectResult? result = response.Result as OkObjectResult;
+        IEnumerable<Player>? players = result?.Value as IEnumerable<Player>;
 
         players.Should().HaveCount(2);
 
@@ -45,6 +44,40 @@ public class PlayerControllerTest
             new Player("player1", "Johan Cruyff", "team2"), new Player("player2", "Sam Smith", "team1")
         );
 
-        _playerService.Verify(playerService => playerService.GetPlayers(), Times.Once);
+        _playerService.Verify(playerService => playerService.GetPlayersAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddPlayer_ReturnsCreated()
+    {
+        Player player1 = new("player1", "Lamine Yamal", "team2");
+
+        _playerService.Setup(playerService => playerService.AddPlayerAsync(player1))
+                .ReturnsAsync(player1);
+
+        ActionResult<Player> response = await _playerController.AddPlayer(player1);
+        CreatedAtActionResult? result = response.Result as CreatedAtActionResult;
+        var player = result?.Value as Player;
+
+        player.Should().BeEquivalentTo(player1);
+
+        _playerService.Verify(playerService => playerService.AddPlayerAsync(It.IsAny<Player>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetPlayer_ReturnsSuccess()
+    {
+        Player player1 = new("player1", "Lamine Yamal", "team2");
+
+        _playerService.Setup(playerService => playerService.GetPlayerAsync("player1"))
+                .ReturnsAsync(player1);
+
+        ActionResult<Player> response = await _playerController.GetPlayer("player1");
+        OkObjectResult? result = response.Result as OkObjectResult;
+        var player = result?.Value as Player;
+
+        player.Should().BeEquivalentTo(player1);
+
+        _playerService.Verify(playerService => playerService.GetPlayerAsync(It.IsAny<string>()), Times.Once);
     }
 }

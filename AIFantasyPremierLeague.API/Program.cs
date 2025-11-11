@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Add services to the container.
@@ -30,6 +31,12 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 
 var app = builder.Build();
 
+// Apply migrations automatically on startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
