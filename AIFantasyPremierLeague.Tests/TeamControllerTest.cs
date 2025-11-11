@@ -48,4 +48,45 @@ public class TeamControllerTest
 
         _teamService.Verify(teamService => teamService.GetTeamsAsync(), Times.Once);
     }
+
+    [Fact]
+    public async Task GetTeam_ReturnsTeam()
+    {
+        Team mockTeam = new("team1", "Barcelona");
+
+        _teamService.Setup(teamService => teamService.GetTeamAsync("team1"))
+                .ReturnsAsync(mockTeam);
+
+        ActionResult<Team> response = await _teamController.GetTeam("team1");
+
+        var result = response.Result as OkObjectResult;
+        var team = result?.Value as Team;
+
+        team.Should().NotBeNull();
+
+        team.Should().BeEquivalentTo(mockTeam);
+
+        _teamService.Verify(teamService => teamService.GetTeamAsync("team1"), Times.Once);
+    }
+
+
+    [Fact]
+    public async Task AddTeam_ReturnsNewTeam()
+    {
+        Team mockTeam = new("team1", "Barcelona");
+
+        _teamService.Setup(teamService => teamService.AddTeamAsync(It.IsAny<Team>()))
+                .ReturnsAsync((Team team) => team);
+
+        ActionResult<Team> response = await _teamController.AddTeam(mockTeam);
+
+        var result = response.Result as CreatedAtActionResult;
+        var team = result?.Value as Team;
+
+        team.Should().NotBeNull();
+
+        team.Should().BeEquivalentTo(mockTeam);
+
+        _teamService.Verify(teamService => teamService.AddTeamAsync(mockTeam), Times.Once);
+    }
 }

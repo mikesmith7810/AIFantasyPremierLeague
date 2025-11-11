@@ -19,5 +19,25 @@ public class TeamService : ITeamService
 
         return teams.Select(teamEntity => new Team(teamEntity.Id, teamEntity.Name));
     }
+
+    public async Task<Team> AddTeamAsync(Team team)
+    {
+        TeamEntity teamEntity = new() { Id = team.Id, Name = team.Name, };
+
+        TeamEntity response = await _teamRepository.AddAsync(teamEntity);
+
+        return new Team(response.Id, response.Name);
+
+    }
+
+    public async Task<Team> GetTeamAsync(string teamId)
+    {
+        TeamEntity? teamEntity = await _teamRepository.GetByIdAsync(teamId);
+
+        if (teamEntity == null)
+            throw new TeamNotFoundException(teamId);
+
+        return new Team(teamEntity.Id, teamEntity.Name);
+    }
 }
 

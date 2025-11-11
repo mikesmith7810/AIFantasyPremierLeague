@@ -24,6 +24,10 @@ public class PlayerService : IPlayerService
     public async Task<Player> GetPlayerAsync(string playerId)
     {
         PlayerEntity? playerEntity = await _playerRepository.GetByIdAsync(playerId);
+
+        if (playerEntity == null)
+            throw new PlayerNotFoundException(playerId);
+
         return new Player(playerEntity.Id, playerEntity.Name, playerEntity.Team);
     }
 

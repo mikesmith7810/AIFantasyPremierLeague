@@ -32,5 +32,31 @@ public class TeamController : ControllerBase
 
         return Ok(teams);
     }
+
+    [HttpPost]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<ActionResult<Team>> AddTeam([FromBody] Team team)
+    {
+        Team createdTeam = await _teamService.AddTeamAsync(team);
+
+        return CreatedAtAction(
+            nameof(GetTeam),
+            new { id = createdTeam.Id },
+            createdTeam
+        );
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Team>> GetTeam(string id)
+    {
+        var team = await _teamService.GetTeamAsync(id);
+
+        if (team == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(team);
+    }
 }
 

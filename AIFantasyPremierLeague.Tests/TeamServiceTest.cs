@@ -45,4 +45,46 @@ public class TeamServiceTest
 
         _teamRepository.Verify(repo => repo.GetAllAsync(), Times.Once);
     }
+
+    [Fact]
+    public async Task GetTeam_ReturnsTeam()
+    {
+        TeamEntity mockTeam = new() { Id = "team1", Name = "Real Madrid" };
+
+        _teamRepository.Setup(teamRepository => teamRepository.GetByIdAsync("team1"))
+                .ReturnsAsync(mockTeam);
+
+        Team team = await _teamService.GetTeamAsync("team1");
+
+        team.Should().NotBeNull();
+        team.Should().BeEquivalentTo(
+            new Team("team1", "Real Madrid"));
+    }
+
+    [Fact]
+    public async Task GetNonExistingTeam_ThrowsTeamNotFoundException()
+    {
+        _teamRepository.Setup(teamRepository => teamRepository.GetByIdAsync("team1"))
+         .ReturnsAsync((TeamEntity)null);
+
+        await _teamService.Invoking(s => s.GetTeamAsync("team1"))
+                      .Should().ThrowAsync<TeamNotFoundException>()
+                      .WithMessage($"Team with ID 'team1' was not found");
+    }
+
+    [Fact]
+    public async Task AddTeam_ReturnsTeam()
+    {
+        Team mockTeam = new Team("team1", "Real Madrid");
+        TeamEntity mockTeamEntity = new() { Id = "team1", Name = "Real Madrid" };
+
+        _teamRepository.Setup(teamRepository => teamRepository.AddAsync(It.IsAny<TeamEntity>()))
+            .ReturnsAsync((TeamEntity entity) => entity);
+
+        Team team = await _teamService.AddTeamAsync(mockTeam);
+
+        team.Should().NotBeNull();
+        team.Should().BeEquivalentTo(
+            new Team("team1", "Real Madrid"));
+    }
 }
