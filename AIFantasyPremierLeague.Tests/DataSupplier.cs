@@ -60,7 +60,7 @@ public class DataSupplier
     {
         return new() { Id = "team1", Name = "Barcelona" };
     }
-    
+
     public static TeamEntity TeamEntity2()
     {
         return new() { Id = "team2", Name = "Real Madrid" };
