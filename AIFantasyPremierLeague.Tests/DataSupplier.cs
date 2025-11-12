@@ -28,22 +28,22 @@ public class DataSupplier
 
     public static PlayerHistory PlayerHistory1()
     {
-        return new("playerHistory1", 25, 1, "team1", 10);
+        return new("playerHistory1", "player1", 25, 1, "team1", 10, 2, 1, 90);
     }
 
     public static PlayerHistory PlayerHistory2()
     {
-        return new("playerHistory2", 25, 3, "team2", 20);
+        return new("playerHistory2", "player2", 25, 3, "team2", 20, 3, 2, 78);
     }
 
     public static PlayerHistoryEntity PlayerHistoryEntity1()
     {
-        return new() { Id = "playerHistory1", Season = 25, Week = 1, Team = "team1", Points = 10 };
+        return new() { Id = "playerHistory1", PlayerId = "1", Season = 25, Week = 1, Team = "team1", Points = 10, Goals = 2, Assists = 1, MinsPlayed = 90 };
     }
 
     public static PlayerHistoryEntity PlayerHistoryEntity2()
     {
-        return new() { Id = "playerHistory2", Season = 25, Week = 3, Team = "team2", Points = 20 };
+        return new() { Id = "playerHistory2", Season = 25, Week = 3, Team = "team2", Points = 20, Goals = 3, Assists = 2, MinsPlayed = 78 };
     }
 
     public static Team Team1()

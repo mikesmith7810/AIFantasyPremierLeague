@@ -9,6 +9,9 @@ public class PlayerHistoryEntity
     public required string Id { get; set; }
 
     [Required]
+    public required string PlayerId { get; set; }
+
+    [Required]
     public required int Season { get; set; }
 
     [Required]
@@ -19,4 +22,13 @@ public class PlayerHistoryEntity
 
     [Required]
     public required int Points { get; set; }
+
+    [Required]
+    public required int Goals { get; set; }
+
+    [Required]
+    public required int Assists { get; set; }
+
+    [Required]
+    public required int MinsPlayed { get; set; }
 }
