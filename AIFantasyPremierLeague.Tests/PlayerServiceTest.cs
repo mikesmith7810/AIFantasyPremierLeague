@@ -9,7 +9,8 @@ using AIFantasyPremierLeague.API.Models;
 
 
 namespace AIFantasyPremierLeague.Tests;
-public class PlayerServiceTest
+
+public class PlayerServiceTest : DataSupplier
 {
     private readonly Mock<IRepository<PlayerEntity>> _playerRepository;
     private readonly PlayerService _playerService;
@@ -28,8 +29,8 @@ public class PlayerServiceTest
     {
         var mockPlayerEntities = new List<PlayerEntity>
         {
-            new() { Id = "player1", Name = "Harry Kane", Team="team1", Value=20 },
-            new() { Id = "player2", Name = "Declan Rice", Team="team2" , Value=30}
+            PlayerEntity1(),
+            PlayerEntity2()
         };
 
         _playerRepository.Setup(playerRepository => playerRepository.GetAllAsync())
@@ -40,14 +41,14 @@ public class PlayerServiceTest
         players.Should().HaveCount(2);
 
         players.Should().ContainInOrder(
-            new Player("player1", "Harry Kane", "team1", 20), new Player("player2", "Declan Rice", "team2", 30)
+            Player1(), Player2()
         );
     }
 
     [Fact]
     public async Task GetPlayer_ReturnsPlayer()
     {
-        PlayerEntity mockPlayer = new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20 };
+        PlayerEntity mockPlayer = PlayerEntity1();
 
         _playerRepository.Setup(playerRepository => playerRepository.GetByIdAsync("player1"))
                 .ReturnsAsync(mockPlayer);
@@ -56,14 +57,14 @@ public class PlayerServiceTest
 
         player.Should().NotBeNull();
         player.Should().BeEquivalentTo(
-            new Player("player1", "Harry Kane", "team1", 20));
+            Player1());
     }
 
     [Fact]
     public async Task AddPlayer_ReturnsPlayer()
     {
-        Player mockPlayer = new Player("player1", "Harry Kane", "team1", 20);
-        PlayerEntity mockPlayerEntity = new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20 };
+        Player mockPlayer = Player1();
+        PlayerEntity mockPlayerEntity = PlayerEntity1();
 
         _playerRepository.Setup(playerRepository => playerRepository.AddAsync(It.IsAny<PlayerEntity>()))
             .ReturnsAsync((PlayerEntity entity) => entity);
@@ -72,7 +73,7 @@ public class PlayerServiceTest
 
         player.Should().NotBeNull();
         player.Should().BeEquivalentTo(
-            new Player("player1", "Harry Kane", "team1", 20));
+            Player1());
     }
 
     [Fact]

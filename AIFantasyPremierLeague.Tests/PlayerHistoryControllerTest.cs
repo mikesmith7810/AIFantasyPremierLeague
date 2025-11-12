@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AIFantasyPremierLeague.Tests;
 
-public class PlayerHistoryControllerTest
+public class PlayerHistoryControllerTest : DataSupplier
 {
     private readonly Mock<IPlayerHistoryService> _playerHistoryService;
     private readonly PlayerHistoryController _playerHistoryController;
@@ -27,8 +27,8 @@ public class PlayerHistoryControllerTest
     {
         var mockPlayerHistorys = new List<PlayerHistory>
         {
-            new("playerHistory1",  25, 1 ,"team1", 10 ),
-            new("playerHistory2",  25, 1 ,"team3", 20 )
+            PlayerHistory1(),
+            PlayerHistory2()
         };
 
         _playerHistoryService.Setup(playerHistoryService => playerHistoryService.GetPlayerHistorysAsync())
@@ -41,7 +41,7 @@ public class PlayerHistoryControllerTest
         playerHistorys.Should().HaveCount(2);
 
         playerHistorys.Should().ContainInOrder(
-            new PlayerHistory("playerHistory1", 25, 1, "team1", 10), new PlayerHistory("playerHistory2", 25, 1, "team3", 20)
+            PlayerHistory1(), PlayerHistory2()
         );
 
         _playerHistoryService.Verify(playerHistoryService => playerHistoryService.GetPlayerHistorysAsync(), Times.Once);
@@ -50,7 +50,7 @@ public class PlayerHistoryControllerTest
     [Fact]
     public async Task AddPlayerHistory_ReturnsCreated()
     {
-        PlayerHistory playerHistory1 = new("playerHistory1", 25, 1, "team1", 10);
+        PlayerHistory playerHistory1 = PlayerHistory1();
 
         _playerHistoryService.Setup(playerHistoryService => playerHistoryService.AddPlayerHistoryAsync(playerHistory1))
                 .ReturnsAsync(playerHistory1);
@@ -67,7 +67,7 @@ public class PlayerHistoryControllerTest
     [Fact]
     public async Task GetPlayerHistory_ReturnsSuccess()
     {
-        PlayerHistory playerHistory1 = new("playerHistory1", 25, 1, "team1", 10);
+        PlayerHistory playerHistory1 = PlayerHistory1();
 
         _playerHistoryService.Setup(playerHistoryService => playerHistoryService.GetPlayerHistoryAsync("playerHistory1"))
                 .ReturnsAsync(playerHistory1);

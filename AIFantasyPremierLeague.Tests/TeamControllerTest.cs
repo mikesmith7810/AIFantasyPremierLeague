@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AIFantasyPremierLeague.Tests;
 
-public class TeamControllerTest
+public class TeamControllerTest : DataSupplier
 {
     private readonly Mock<ITeamService> _teamService;
     private readonly TeamController _teamController;
@@ -27,8 +27,8 @@ public class TeamControllerTest
     {
         var mockTeams = new List<Team>
         {
-            new("team1", "Barcelona"),
-            new("team2", "Real Madrid")
+            Team1(),
+            Team2()
         };
 
         _teamService.Setup(teamService => teamService.GetTeamsAsync())
@@ -42,8 +42,8 @@ public class TeamControllerTest
         teams.Should().HaveCount(2);
 
         teams.Should().ContainInOrder(
-            new Team("team1", "Barcelona"),
-            new Team("team2", "Real Madrid")
+            Team1(),
+            Team2()
         );
 
         _teamService.Verify(teamService => teamService.GetTeamsAsync(), Times.Once);
@@ -52,7 +52,7 @@ public class TeamControllerTest
     [Fact]
     public async Task GetTeam_ReturnsTeam()
     {
-        Team mockTeam = new("team1", "Barcelona");
+        Team mockTeam = Team1();
 
         _teamService.Setup(teamService => teamService.GetTeamAsync("team1"))
                 .ReturnsAsync(mockTeam);
@@ -73,7 +73,7 @@ public class TeamControllerTest
     [Fact]
     public async Task AddTeam_ReturnsNewTeam()
     {
-        Team mockTeam = new("team1", "Barcelona");
+        Team mockTeam = Team1();
 
         _teamService.Setup(teamService => teamService.AddTeamAsync(It.IsAny<Team>()))
                 .ReturnsAsync((Team team) => team);

@@ -9,7 +9,8 @@ using AIFantasyPremierLeague.API.Models;
 
 
 namespace AIFantasyPremierLeague.Tests;
-public class PlayerHistoryServiceTest
+
+public class PlayerHistoryServiceTest : DataSupplier
 {
     private readonly Mock<IRepository<PlayerHistoryEntity>> _playerHistoryRepository;
     private readonly PlayerHistoryService _playerHistoryService;
@@ -28,8 +29,8 @@ public class PlayerHistoryServiceTest
     {
         var mockPlayerHistoryEntities = new List<PlayerHistoryEntity>
         {
-            new() { Id = "playerHistory1", Season = 25, Week =1 ,Team="team1", Points=10 },
-            new() { Id = "playerHistory2", Season = 25, Week =3 ,Team="team2", Points=20  }
+            PlayerHistoryEntity1(),
+           PlayerHistoryEntity2()
         };
 
         _playerHistoryRepository.Setup(playerHistoryRepository => playerHistoryRepository.GetAllAsync())
@@ -40,14 +41,14 @@ public class PlayerHistoryServiceTest
         playerHistorys.Should().HaveCount(2);
 
         playerHistorys.Should().ContainInOrder(
-            new PlayerHistory("playerHistory1", 25, 1, "team1", 10), new PlayerHistory("playerHistory2", 25, 3, "team2", 20)
+            PlayerHistory1(), PlayerHistory2()
         );
     }
 
     [Fact]
     public async Task GetPlayerHistory_ReturnsPlayerHistory()
     {
-        PlayerHistoryEntity mockPlayerHistory = new() { Id = "playerHistory1", Season = 25, Week = 1, Team = "team1", Points = 10 };
+        PlayerHistoryEntity mockPlayerHistory = PlayerHistoryEntity1();
 
         _playerHistoryRepository.Setup(playerHistoryRepository => playerHistoryRepository.GetByIdAsync("playerHistory1"))
                 .ReturnsAsync(mockPlayerHistory);
@@ -56,14 +57,14 @@ public class PlayerHistoryServiceTest
 
         playerHistory.Should().NotBeNull();
         playerHistory.Should().BeEquivalentTo(
-            new PlayerHistory("playerHistory1", 25, 1, "team1", 10));
+            PlayerHistory1());
     }
 
     [Fact]
     public async Task AddPlayerHistory_ReturnsPlayerHistory()
     {
-        PlayerHistory mockPlayerHistory = new PlayerHistory("playerHistory1", 25, 1, "team1", 10);
-        PlayerHistoryEntity mockPlayerHistoryEntity = new() { Id = "playerHistory1", Season = 25, Week = 1, Team = "team1", Points = 10 };
+        PlayerHistory mockPlayerHistory = PlayerHistory1();
+        PlayerHistoryEntity mockPlayerHistoryEntity = PlayerHistoryEntity1();
 
         _playerHistoryRepository.Setup(playerHistoryRepository => playerHistoryRepository.AddAsync(It.IsAny<PlayerHistoryEntity>()))
             .ReturnsAsync((PlayerHistoryEntity entity) => entity);
@@ -72,7 +73,7 @@ public class PlayerHistoryServiceTest
 
         playerHistory.Should().NotBeNull();
         playerHistory.Should().BeEquivalentTo(
-            new PlayerHistory("playerHistory1", 25, 1, "team1", 10));
+            PlayerHistory1());
     }
 
     [Fact]

@@ -9,7 +9,8 @@ using AIFantasyPremierLeague.API.Models;
 
 
 namespace AIFantasyPremierLeague.Tests;
-public class TeamServiceTest
+
+public class TeamServiceTest : DataSupplier
 {
     private readonly Mock<IRepository<TeamEntity>> _teamRepository;
     private readonly TeamService _teamService;
@@ -27,8 +28,8 @@ public class TeamServiceTest
     {
         var mockTeamEntities = new List<TeamEntity>
         {
-            new() { Id = "team1", Name = "Barcelona" },
-            new() { Id = "team2", Name = "Real Madrid" }
+            TeamEntity1(),
+            TeamEntity2()
         };
 
         _teamRepository.Setup(teamRepository => teamRepository.GetAllAsync())
@@ -39,8 +40,8 @@ public class TeamServiceTest
         teams.Should().HaveCount(2);
 
         teams.Should().ContainInOrder(
-            new Team("team1", "Barcelona"),
-            new Team("team2", "Real Madrid")
+            Team1(),
+            Team2()
         );
 
         _teamRepository.Verify(repo => repo.GetAllAsync(), Times.Once);
@@ -49,7 +50,7 @@ public class TeamServiceTest
     [Fact]
     public async Task GetTeam_ReturnsTeam()
     {
-        TeamEntity mockTeam = new() { Id = "team1", Name = "Real Madrid" };
+        TeamEntity mockTeam = TeamEntity1();
 
         _teamRepository.Setup(teamRepository => teamRepository.GetByIdAsync("team1"))
                 .ReturnsAsync(mockTeam);
@@ -58,7 +59,7 @@ public class TeamServiceTest
 
         team.Should().NotBeNull();
         team.Should().BeEquivalentTo(
-            new Team("team1", "Real Madrid"));
+            Team1());
     }
 
     [Fact]
@@ -75,8 +76,8 @@ public class TeamServiceTest
     [Fact]
     public async Task AddTeam_ReturnsTeam()
     {
-        Team mockTeam = new Team("team1", "Real Madrid");
-        TeamEntity mockTeamEntity = new() { Id = "team1", Name = "Real Madrid" };
+        Team mockTeam = Team1();
+        TeamEntity mockTeamEntity = TeamEntity1();
 
         _teamRepository.Setup(teamRepository => teamRepository.AddAsync(It.IsAny<TeamEntity>()))
             .ReturnsAsync((TeamEntity entity) => entity);
@@ -85,6 +86,6 @@ public class TeamServiceTest
 
         team.Should().NotBeNull();
         team.Should().BeEquivalentTo(
-            new Team("team1", "Real Madrid"));
+            Team1());
     }
 }
