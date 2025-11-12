@@ -26,24 +26,24 @@ public class DataSupplier
         return new() { Id = "player2", Name = "Declan Rice", Team = "team2", Value = 30, Position = "MID", Age = 27 };
     }
 
-    public static PlayerHistory PlayerHistory1()
+    public static PlayerPerformance PlayerPerformance1()
     {
-        return new("playerHistory1", "player1", 25, 1, "team1", 10, 2, 1, 90);
+        return new("playerPerformance1", "player1", 25, 1, "team1", 10, 2, 1, 90);
     }
 
-    public static PlayerHistory PlayerHistory2()
+    public static PlayerPerformance PlayerPerformance2()
     {
-        return new("playerHistory2", "player2", 25, 3, "team2", 20, 3, 2, 78);
+        return new("playerPerformance2", "player2", 25, 3, "team2", 20, 3, 2, 78);
     }
 
-    public static PlayerHistoryEntity PlayerHistoryEntity1()
+    public static PlayerPerformanceEntity PlayerPerformanceEntity1()
     {
-        return new() { Id = "playerHistory1", PlayerId = "player1", Season = 25, Week = 1, Team = "team1", Points = 10, Goals = 2, Assists = 1, MinsPlayed = 90 };
+        return new() { Id = "playerPerformance1", PlayerId = "player1", Season = 25, Week = 1, Team = "team1", Points = 10, Goals = 2, Assists = 1, MinsPlayed = 90 };
     }
 
-    public static PlayerHistoryEntity PlayerHistoryEntity2()
+    public static PlayerPerformanceEntity PlayerPerformanceEntity2()
     {
-        return new() { Id = "playerHistory2", PlayerId = "player2", Season = 25, Week = 3, Team = "team2", Points = 20, Goals = 3, Assists = 2, MinsPlayed = 78 };
+        return new() { Id = "playerPerformance2", PlayerId = "player2", Season = 25, Week = 3, Team = "team2", Points = 20, Goals = 3, Assists = 2, MinsPlayed = 78 };
     }
 
     public static Team Team1()

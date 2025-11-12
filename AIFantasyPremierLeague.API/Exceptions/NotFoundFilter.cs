@@ -7,7 +7,7 @@ public class NotFoundFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
     {
-        if (context.Exception is TeamNotFoundException or PlayerNotFoundException or PlayerHistoryNotFoundException)
+        if (context.Exception is TeamNotFoundException or PlayerNotFoundException or PlayerPerformanceNotFoundException)
         {
             var response = new NotFoundObjectResult(new
             {

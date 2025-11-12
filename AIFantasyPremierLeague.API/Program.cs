@@ -31,7 +31,7 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
-builder.Services.AddScoped<IPlayerHistoryService, PlayerHistoryService>();
+builder.Services.AddScoped<IPlayerPerformanceService, PlayerPerformanceService>();
 builder.Services.AddScoped<IFPLDataService, FPLDataService>();
 
 builder.Services.AddHttpClient("FPLApi", client =>

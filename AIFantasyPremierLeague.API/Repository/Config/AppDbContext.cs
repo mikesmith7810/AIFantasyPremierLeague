@@ -9,7 +9,7 @@ public class AppDbContext : DbContext
 
     public DbSet<PlayerEntity> Players { get; set; }
 
-    public DbSet<PlayerHistoryEntity> PlayerHistory { get; set; }
+    public DbSet<PlayerPerformanceEntity> PlayerHistory { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)

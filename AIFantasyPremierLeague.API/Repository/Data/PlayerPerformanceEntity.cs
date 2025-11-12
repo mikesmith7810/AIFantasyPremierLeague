@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AIFantasyPremierLeague.API.Repository.Data;
 
-public class PlayerHistoryEntity
+public class PlayerPerformanceEntity
 
 {
     [Key]
