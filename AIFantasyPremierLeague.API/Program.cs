@@ -1,3 +1,4 @@
+using AIFantasyPremierLeague.API.Controllers;
 using AIFantasyPremierLeague.API.Exceptions;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Config;
@@ -12,16 +13,14 @@ var connectionString = builder.Configuration.GetConnectionString("MySqlConnectio
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         connectionString,
-        ServerVersion.AutoDetect(connectionString), // Auto-detects MySQL or MariaDB version
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure() // Adds resilience to transient errors
+        ServerVersion.AutoDetect(connectionString),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure()
     )
 );
 
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -30,21 +29,26 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<NotFoundFilter>();
 });
 
-// Register your custom services for dependency injection
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IPlayerHistoryService, PlayerHistoryService>();
+builder.Services.AddScoped<IFPLDataService, FPLDataService>();
+
+builder.Services.AddHttpClient("FPLApi", client =>
+{
+    client.BaseAddress = new Uri("https://fantasy.premierleague.com");
+    client.Timeout = TimeSpan.FromSeconds(15);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
 
 var app = builder.Build();
 
-// Apply migrations automatically on startup
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
 }
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

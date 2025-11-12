@@ -38,12 +38,12 @@ public class DataSupplier
 
     public static PlayerHistoryEntity PlayerHistoryEntity1()
     {
-        return new() { Id = "playerHistory1", PlayerId = "1", Season = 25, Week = 1, Team = "team1", Points = 10, Goals = 2, Assists = 1, MinsPlayed = 90 };
+        return new() { Id = "playerHistory1", PlayerId = "player1", Season = 25, Week = 1, Team = "team1", Points = 10, Goals = 2, Assists = 1, MinsPlayed = 90 };
     }
 
     public static PlayerHistoryEntity PlayerHistoryEntity2()
     {
-        return new() { Id = "playerHistory2", Season = 25, Week = 3, Team = "team2", Points = 20, Goals = 3, Assists = 2, MinsPlayed = 78 };
+        return new() { Id = "playerHistory2", PlayerId = "player2", Season = 25, Week = 3, Team = "team2", Points = 20, Goals = 3, Assists = 2, MinsPlayed = 78 };
     }
 
     public static Team Team1()
