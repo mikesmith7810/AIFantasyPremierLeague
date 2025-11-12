@@ -8,22 +8,22 @@ public class DataSupplier
 {
     public static Player Player1()
     {
-        return new Player("player1", "Harry Kane", "team1", 20);
+        return new Player("player1", "Harry Kane", "team1", 20, "ATT", 29);
     }
 
     public static Player Player2()
     {
-        return new Player("player2", "Declan Rice", "team2", 30);
+        return new Player("player2", "Declan Rice", "team2", 30, "MID", 27);
     }
 
     public static PlayerEntity PlayerEntity1()
     {
-        return new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20 };
+        return new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20, Position = "ATT", Age = 29 };
     }
 
     public static PlayerEntity PlayerEntity2()
     {
-        return new() { Id = "player2", Name = "Declan Rice", Team = "team2", Value = 30 };
+        return new() { Id = "player2", Name = "Declan Rice", Team = "team2", Value = 30, Position = "MID", Age = 27 };
     }
 
     public static PlayerHistory PlayerHistory1()

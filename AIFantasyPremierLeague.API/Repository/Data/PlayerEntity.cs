@@ -17,4 +17,10 @@ public class PlayerEntity
 
     [Required]
     public required double Value { get; set; }
+
+    [Required]
+    public required string Position { get; set; }
+
+    [Required]
+    public required int Age { get; set; }
 }
