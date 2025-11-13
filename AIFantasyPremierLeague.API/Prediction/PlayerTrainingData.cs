@@ -11,10 +11,9 @@ public class PlayerTrainingData
 
     public float Assists { get; set; }
 
-
     public float MinsPlayed { get; set; }
 
-    [LoadColumn(5), ColumnName("Label")]
+    [ColumnName("Label")]
     public float Points { get; set; }
 }
 

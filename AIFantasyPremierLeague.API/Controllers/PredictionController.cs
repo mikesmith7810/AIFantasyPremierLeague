@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.Models;
@@ -31,6 +32,19 @@ public class PredictionController : ControllerBase
         }
 
         return Ok(predictionHighestPoints);
+    }
+
+    [HttpPost("train")]
+    public async Task<ActionResult> TrainAndCreateModel()
+    {
+        string modelPath = await _predictionService.TrainAndCreateModelAsync();
+
+        return Created($"/prediction/model/{Path.GetFileName(modelPath)}", new
+        {
+            message = $"Model successfully trained and saved to: {modelPath}",
+            modelPath = modelPath,
+            createdAt = DateTime.UtcNow
+        });
     }
 }
 
