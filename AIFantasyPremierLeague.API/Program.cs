@@ -33,6 +33,7 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IPlayerPerformanceService, PlayerPerformanceService>();
 builder.Services.AddScoped<IFPLDataService, FPLDataService>();
+builder.Services.AddScoped<IPredictionService, PredictionService>();
 
 builder.Services.AddHttpClient("FPLApi", client =>
 {

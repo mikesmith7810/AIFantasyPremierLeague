@@ -31,5 +31,5 @@ public class PlayerEntity
     [JsonConverter(typeof(PositionConverter))]
     public required string Position { get; set; }
 
-    public int Age { get; set; }
+    public int PredictedPoints { get; set; }
 }

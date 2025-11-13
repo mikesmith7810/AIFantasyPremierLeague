@@ -18,12 +18,12 @@ public class DataSupplier
 
     public static PlayerEntity PlayerEntity1()
     {
-        return new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20, Position = "ATT", Age = 29 };
+        return new() { Id = "player1", Name = "Harry Kane", Team = "team1", Value = 20, Position = "ATT", PredictedPoints = 29 };
     }
 
     public static PlayerEntity PlayerEntity2()
     {
-        return new() { Id = "player2", Name = "Declan Rice", Team = "team2", Value = 30, Position = "MID", Age = 27 };
+        return new() { Id = "player2", Name = "Declan Rice", Team = "team2", Value = 30, Position = "MID", PredictedPoints = 27 };
     }
 
     public static PlayerPerformance PlayerPerformance1()
