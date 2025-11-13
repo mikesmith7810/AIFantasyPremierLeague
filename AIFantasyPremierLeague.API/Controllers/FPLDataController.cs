@@ -19,7 +19,7 @@ public class FPLDataController : ControllerBase
         _fplDataService = fplDataService;
     }
 
-    [HttpPost("/playersKnownData")]
+    [HttpPost("playersKnownData")]
     public async Task<ActionResult<Player>> LoadPlayersKnownData()
     {
 
@@ -27,11 +27,11 @@ public class FPLDataController : ControllerBase
         return Created();
     }
 
-    [HttpPost("/playersPerformanceData/{gameWeek}")]
-    public async Task<ActionResult<Player>> LoadPlayersPerformanceData()
+    [HttpPost("playersPerformanceData/{gameWeek}")]
+    public async Task<ActionResult<Player>> LoadPlayersPerformanceData(int gameWeek)
     {
 
-        await _fplDataService.LoadPlayersKnownDataAsync();
+        await _fplDataService.LoadPlayersPerformanceDataAsync(gameWeek.ToString());
         return Created();
     }
 }

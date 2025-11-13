@@ -15,11 +15,12 @@ public class PlayerPerformanceService : IPlayerPerformanceService
 
     public async Task<PlayerPerformance> AddPlayerPerformanceAsync(PlayerPerformance playerPerformance)
     {
-        PlayerPerformanceEntity playerPerformanceEntity = new() { Id = playerPerformance.Id, PlayerId = playerPerformance.PlayerId, Season = playerPerformance.Season, Week = playerPerformance.Week, Team = playerPerformance.TeamId, Points = playerPerformance.Points, Goals = playerPerformance.Goals, Assists = playerPerformance.Assists, MinsPlayed = playerPerformance.MinsPlayed };
+
+        PlayerPerformanceEntity playerPerformanceEntity = new() { Id = playerPerformance.Id, PlayerId = playerPerformance.PlayerId, Stats = new() { Points = playerPerformance.Points, Goals = playerPerformance.Goals, Assists = playerPerformance.Assists, MinsPlayed = playerPerformance.MinsPlayed } };
 
         PlayerPerformanceEntity response = await _playerPerformanceRepository.AddAsync(playerPerformanceEntity);
 
-        return new PlayerPerformance(response.Id, response.PlayerId, response.Season, response.Week, response.Team, response.Points, response.Goals, response.Assists, response.MinsPlayed);
+        return new PlayerPerformance(response.Id, response.PlayerId, response.Stats.Points, response.Stats.Goals, response.Stats.Assists, response.Stats.MinsPlayed);
 
     }
 
@@ -30,13 +31,13 @@ public class PlayerPerformanceService : IPlayerPerformanceService
         if (playerPerformanceEntity == null)
             throw new PlayerPerformanceNotFoundException(playerPerformanceId);
 
-        return new PlayerPerformance(playerPerformanceEntity.Id, playerPerformanceEntity.PlayerId, playerPerformanceEntity.Season, playerPerformanceEntity.Week, playerPerformanceEntity.Team, playerPerformanceEntity.Points, playerPerformanceEntity.Goals, playerPerformanceEntity.Assists, playerPerformanceEntity.MinsPlayed);
+        return new PlayerPerformance(playerPerformanceEntity.Id, playerPerformanceEntity.PlayerId, playerPerformanceEntity.Stats.Points, playerPerformanceEntity.Stats.Goals, playerPerformanceEntity.Stats.Assists, playerPerformanceEntity.Stats.MinsPlayed);
     }
 
     public async Task<IEnumerable<PlayerPerformance>> GetPlayerPerformancesAsync()
     {
         IEnumerable<PlayerPerformanceEntity> playerPerformances = await _playerPerformanceRepository.GetAllAsync();
-        return playerPerformances.Select(playerPerformanceEntity => new PlayerPerformance(playerPerformanceEntity.Id, playerPerformanceEntity.PlayerId, playerPerformanceEntity.Season, playerPerformanceEntity.Week, playerPerformanceEntity.Team, playerPerformanceEntity.Points, playerPerformanceEntity.Goals, playerPerformanceEntity.Assists, playerPerformanceEntity.MinsPlayed));
+        return playerPerformances.Select(playerPerformanceEntity => new PlayerPerformance(playerPerformanceEntity.Id, playerPerformanceEntity.PlayerId, playerPerformanceEntity.Stats.Points, playerPerformanceEntity.Stats.Goals, playerPerformanceEntity.Stats.Assists, playerPerformanceEntity.Stats.MinsPlayed));
     }
 }
 
