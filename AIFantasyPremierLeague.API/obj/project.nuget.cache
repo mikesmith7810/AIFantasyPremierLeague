@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8bQtQhlcIpw=",
+  "dgSpecHash": "xHqkPWeTXmU=",
   "success": true,
   "projectFilePath": "/Users/mikesmith/code/AIFantasyPremierLeague/AIFantasyPremierLeague.API/AIFantasyPremierLeague.API.csproj",
   "expectedPackageFiles": [
@@ -29,6 +29,8 @@
     "/Users/mikesmith/.nuget/packages/microsoft.extensions.dependencymodel/9.0.10/microsoft.extensions.dependencymodel.9.0.10.nupkg.sha512",
     "/Users/mikesmith/.nuget/packages/microsoft.extensions.logging/9.0.10/microsoft.extensions.logging.9.0.10.nupkg.sha512",
     "/Users/mikesmith/.nuget/packages/microsoft.extensions.logging.abstractions/9.0.10/microsoft.extensions.logging.abstractions.9.0.10.nupkg.sha512",
+    "/Users/mikesmith/.nuget/packages/microsoft.extensions.ml/5.0.0/microsoft.extensions.ml.5.0.0.nupkg.sha512",
+    "/Users/mikesmith/.nuget/packages/microsoft.extensions.objectpool/9.0.4/microsoft.extensions.objectpool.9.0.4.nupkg.sha512",
     "/Users/mikesmith/.nuget/packages/microsoft.extensions.options/9.0.10/microsoft.extensions.options.9.0.10.nupkg.sha512",
     "/Users/mikesmith/.nuget/packages/microsoft.extensions.primitives/9.0.10/microsoft.extensions.primitives.9.0.10.nupkg.sha512",
     "/Users/mikesmith/.nuget/packages/microsoft.ml/5.0.0/microsoft.ml.5.0.0.nupkg.sha512",
