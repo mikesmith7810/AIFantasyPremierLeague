@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AIFantasyPremierLeague.API.Controllers;
 
 [ApiController]
-[Route("data")]
+[Route("fpldata")]
 public class FPLDataController : ControllerBase
 {
 
@@ -20,10 +20,18 @@ public class FPLDataController : ControllerBase
     }
 
     [HttpPost("/playersKnownData")]
-    public async Task<ActionResult<Player>> GetPlayersKnownData()
+    public async Task<ActionResult<Player>> LoadPlayersKnownData()
     {
 
-        await _fplDataService.GetPlayersKnownDataAsync();
+        await _fplDataService.LoadPlayersKnownDataAsync();
+        return Created();
+    }
+
+    [HttpPost("/playersPerformanceData/{gameWeek}")]
+    public async Task<ActionResult<Player>> LoadPlayersPerformanceData()
+    {
+
+        await _fplDataService.LoadPlayersKnownDataAsync();
         return Created();
     }
 }

@@ -8,17 +8,20 @@ namespace AIFantasyPremierLeague.API.Services;
 public class FPLDataService : IFPLDataService
 {
     private readonly IRepository<PlayerEntity> _playerRepository;
+
+    private readonly IRepository<PlayerPerformanceEntity> _playerPerformanceRepository;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<FPLDataService> _logger;
 
-    public FPLDataService(IRepository<PlayerEntity> playerRepository, IHttpClientFactory httpClientFactory, ILogger<FPLDataService> logger)
+    public FPLDataService(IRepository<PlayerEntity> playerRepository, IRepository<PlayerPerformanceEntity> playerPerformanceRepository, IHttpClientFactory httpClientFactory, ILogger<FPLDataService> logger)
     {
         _playerRepository = playerRepository;
+        _playerPerformanceRepository = playerPerformanceRepository;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
 
-    public async Task GetPlayersKnownDataAsync()
+    public async Task LoadPlayersKnownDataAsync()
     {
 
         var client = _httpClientFactory.CreateClient("FPLApi");
@@ -42,14 +45,44 @@ public class FPLDataService : IFPLDataService
         }
 
         List<PlayerEntity> players = fplData.Players;
-        _logger.LogInformation("FPL Player Size: {Count}", players.Count);
 
         foreach (var player in players)
         {
             await _playerRepository.AddAsync(player);
         }
+    }
 
-        _logger.LogInformation("Successfully saved {Count} players to database", players.Count);
+    public async Task LoadPlayersPerformanceDataAsync(string gameWeek)
+    {
+
+        var client = _httpClientFactory.CreateClient("FPLApi");
+
+        var response = await client.GetAsync("/api/event/" + gameWeek + "/live/");
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            AllowTrailingCommas = true
+        };
+
+        FPLPerformanceData? fplPerformanceData = JsonSerializer.Deserialize<FPLPerformanceData>(jsonString, options);
+
+        if (fplPerformanceData?.PlayerPerformances == null)
+        {
+            _logger.LogWarning("No player performance elements found in FPL API response");
+            return;
+        }
+
+        List<PlayerPerformanceEntity> playerPerformances = fplPerformanceData.PlayerPerformances;
+
+        foreach (var playerPerformance in playerPerformances)
+        {
+            await _playerPerformanceRepository.AddAsync(playerPerformance);
+        }
+
+
     }
 }
 
