@@ -1,9 +1,11 @@
 using AIFantasyPremierLeague.API.Controllers;
 using AIFantasyPremierLeague.API.Exceptions;
+using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Config;
 using AIFantasyPremierLeague.API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.ML;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +43,9 @@ builder.Services.AddHttpClient("FPLApi", client =>
     client.Timeout = TimeSpan.FromSeconds(15);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
+
+builder.Services.AddPredictionEnginePool<PlayerTrainingData, PlayerPrediction>()
+    .FromFile("fplModel.zip", watchForChanges: true);
 
 var app = builder.Build();
 

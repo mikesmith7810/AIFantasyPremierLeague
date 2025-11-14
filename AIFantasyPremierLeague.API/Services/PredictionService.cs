@@ -7,23 +7,15 @@ using Microsoft.ML;
 
 namespace AIFantasyPremierLeague.API.Services;
 
-public class PredictionService : IPredictionService
+public class PredictionService(IRepository<PlayerEntity> playerRepository, IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool) : IPredictionService
 {
-    private readonly IRepository<PlayerEntity> _playerRepository;
-    private readonly IRepository<PlayerPerformanceEntity> _playerPerformanceRepository;
+    private readonly IRepository<PlayerEntity> _playerRepository = playerRepository;
+    private readonly IRepository<PlayerPerformanceEntity> _playerPerformanceRepository = playerPerformanceRepository;
 
-    private readonly PredictionEnginePool<PlayerTrainingData, PlayerPrediction> _predictionEnginePool;
+    private readonly PredictionEnginePool<PlayerTrainingData, PlayerPrediction> _predictionEnginePool = predictionEnginePool;
 
-    private readonly MLContext _mlContext;
+    private readonly MLContext _mlContext = new MLContext();
     private ITransformer? _trainedModel;
-
-    public PredictionService(IRepository<PlayerEntity> playerRepository, IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool)
-    {
-        _playerRepository = playerRepository;
-        _playerPerformanceRepository = playerPerformanceRepository;
-        _predictionEnginePool = predictionEnginePool;
-        _mlContext = new MLContext();
-    }
 
     public async Task<string> TrainAndCreateModelAsync()
     {
@@ -64,14 +56,14 @@ public class PredictionService : IPredictionService
 
     private static List<PlayerTrainingData> MapToTrainingData(IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities)
     {
-        return playerPerformanceEntities.Select(playerPerformanceEntity => new PlayerTrainingData
+        return [.. playerPerformanceEntities.Select(playerPerformanceEntity => new PlayerTrainingData
         {
             PlayerId = playerPerformanceEntity.PlayerId,
             Goals = playerPerformanceEntity.Stats.Goals,
             Assists = playerPerformanceEntity.Stats.Assists,
             MinsPlayed = playerPerformanceEntity.Stats.MinsPlayed,
             Points = playerPerformanceEntity.Stats.Points
-        }).ToList();
+        })];
     }
 
     public Task<PredictionHighestPoints> GetPredictionHighestPointsAsync()

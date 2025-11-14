@@ -31,7 +31,7 @@ public class FPLDataController : ControllerBase
     public async Task<ActionResult<Player>> LoadPlayersPerformanceData(int gameWeek)
     {
 
-        await _fplDataService.LoadPlayersPerformanceDataAsync(gameWeek.ToString());
+        await _fplDataService.LoadPlayersPerformanceDataAsync(gameWeek);
         return Created();
     }
 }
