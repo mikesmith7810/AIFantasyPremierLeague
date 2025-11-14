@@ -5,20 +5,25 @@ namespace AIFantasyPremierLeague.API.Converters;
 
 public class PositionConverter : JsonConverter<string>
 {
+    private const string GK = "GK";
+    private const string DEF = "DEF";
+    private const string MID = "MID";
+    private const string ATT = "ATT";
+
     private static readonly Dictionary<int, string> PositionMap = new()
     {
-        { 1, "GK" },
-        { 2, "DEF" },
-        { 3, "MID" },
-        { 4, "ATT" }
+        { 1, GK },
+        { 2, DEF },
+        { 3, MID },
+        { 4, ATT }
     };
 
     private static readonly Dictionary<string, int> ReversePositionMap = new()
     {
-        { "GK", 1 },
-        { "DEF", 2 },
-        { "MID", 3 },
-        { "ATT", 4 }
+        { GK, 1 },
+        { DEF, 2 },
+        { MID, 3 },
+        { ATT, 4 }
     };
 
     public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

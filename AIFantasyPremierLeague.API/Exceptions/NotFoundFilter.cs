@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
 
 namespace AIFantasyPremierLeague.API.Exceptions;
 public class NotFoundFilter : IExceptionFilter
@@ -13,7 +12,7 @@ public class NotFoundFilter : IExceptionFilter
             {
                 Status = 404,
                 Error = "Not Found",
-                Message = context.Exception.Message
+                context.Exception.Message
             });
 
             context.Result = response;

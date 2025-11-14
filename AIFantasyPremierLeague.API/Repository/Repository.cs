@@ -1,18 +1,10 @@
-// Repositories/Repository.cs
 using AIFantasyPremierLeague.API.Repository.Config;
 using Microsoft.EntityFrameworkCore;
 namespace AIFantasyPremierLeague.API.Repository;
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+public class Repository<TEntity>(AppDbContext context) : IRepository<TEntity> where TEntity : class
 {
-    protected readonly AppDbContext _context;
-    private readonly DbSet<TEntity> _dbSet;
-
-    public Repository(AppDbContext context)
-    {
-        _context = context;
-        _dbSet = context.Set<TEntity>();
-    }
+    private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
     public async Task<TEntity?> GetByIdAsync(string id)
     {
@@ -27,14 +19,14 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     public async Task<TEntity> AddAsync(TEntity entity)
     {
         await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return entity;
     }
 
     public void Update(TEntity entity)
     {
         _dbSet.Attach(entity);
-        _context.Entry(entity).State = EntityState.Modified;
+        context.Entry(entity).State = EntityState.Modified;
     }
 
     public void Remove(TEntity entity)
@@ -44,6 +36,6 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public Task<int> SaveChangesAsync()
     {
-        return _context.SaveChangesAsync();
+        return context.SaveChangesAsync();
     }
 }

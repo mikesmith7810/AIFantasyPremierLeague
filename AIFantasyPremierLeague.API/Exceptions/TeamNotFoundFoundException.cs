@@ -1,7 +1,5 @@
-public class TeamNotFoundException : Exception
+namespace AIFantasyPremierLeague.API.Exceptions;
+
+public class TeamNotFoundException(string teamId) : Exception($"Team with ID '{teamId}' was not found")
 {
-    public TeamNotFoundException(string teamId)
-         : base($"Team with ID '{teamId}' was not found")
-    {
-    }
 }

@@ -1,21 +1,15 @@
-using System.Threading.Tasks;
+using AIFantasyPremierLeague.API.Exceptions;
 using AIFantasyPremierLeague.API.Models;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Data;
 
 namespace AIFantasyPremierLeague.API.Services;
-public class TeamService : ITeamService
+
+public class TeamService(IRepository<TeamEntity> teamRepository) : ITeamService
 {
-    private readonly IRepository<TeamEntity> _teamRepository;
-
-    public TeamService(IRepository<TeamEntity> teamRepository)
-    {
-        _teamRepository = teamRepository;
-    }
-
     public async Task<IEnumerable<Team>> GetTeamsAsync()
     {
-        IEnumerable<TeamEntity> teams = await _teamRepository.GetAllAsync();
+        var teams = await teamRepository.GetAllAsync();
 
         return teams.Select(teamEntity => new Team(teamEntity.Id, teamEntity.Name));
     }
@@ -24,7 +18,7 @@ public class TeamService : ITeamService
     {
         TeamEntity teamEntity = new() { Id = team.Id, Name = team.Name, };
 
-        TeamEntity response = await _teamRepository.AddAsync(teamEntity);
+        var response = await teamRepository.AddAsync(teamEntity);
 
         return new Team(response.Id, response.Name);
 
@@ -32,10 +26,7 @@ public class TeamService : ITeamService
 
     public async Task<Team> GetTeamAsync(string teamId)
     {
-        TeamEntity? teamEntity = await _teamRepository.GetByIdAsync(teamId);
-
-        if (teamEntity == null)
-            throw new TeamNotFoundException(teamId);
+        TeamEntity? teamEntity = await teamRepository.GetByIdAsync(teamId) ?? throw new TeamNotFoundException(teamId);
 
         return new Team(teamEntity.Id, teamEntity.Name);
     }

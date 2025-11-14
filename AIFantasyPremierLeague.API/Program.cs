@@ -1,4 +1,3 @@
-using AIFantasyPremierLeague.API.Controllers;
 using AIFantasyPremierLeague.API.Exceptions;
 using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Repository;
@@ -6,7 +5,6 @@ using AIFantasyPremierLeague.API.Repository.Config;
 using AIFantasyPremierLeague.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ML;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

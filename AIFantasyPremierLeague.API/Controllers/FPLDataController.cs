@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Net.Mime;
-using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.Models;
 using AIFantasyPremierLeague.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +27,6 @@ public class FPLDataController : ControllerBase
     [HttpPost("playersPerformanceData/{gameWeek}")]
     public async Task<ActionResult<Player>> LoadPlayersPerformanceData(int gameWeek)
     {
-
         await _fplDataService.LoadPlayersPerformanceDataAsync(gameWeek);
         return Created();
     }

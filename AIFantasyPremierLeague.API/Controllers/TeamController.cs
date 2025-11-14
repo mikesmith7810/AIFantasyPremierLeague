@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.Models;
 using AIFantasyPremierLeague.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,21 +7,13 @@ namespace AIFantasyPremierLeague.API.Controllers;
 
 [ApiController]
 [Route("team")]
-public class TeamController : ControllerBase
+public class TeamController(ITeamService teamService) : ControllerBase
 {
-
-    private readonly ITeamService _teamService;
-
-    public TeamController(ITeamService teamService)
-    {
-        _teamService = teamService;
-    }
-
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
     {
-        IEnumerable<Team> teams = await _teamService.GetTeamsAsync();
+        var teams = await teamService.GetTeamsAsync();
 
         if (teams == null || !teams.Any())
         {
@@ -37,7 +27,7 @@ public class TeamController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<ActionResult<Team>> AddTeam([FromBody] Team team)
     {
-        Team createdTeam = await _teamService.AddTeamAsync(team);
+        var createdTeam = await teamService.AddTeamAsync(team);
 
         return CreatedAtAction(
             nameof(GetTeam),
@@ -49,7 +39,7 @@ public class TeamController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Team>> GetTeam(string id)
     {
-        var team = await _teamService.GetTeamAsync(id);
+        var team = await teamService.GetTeamAsync(id);
 
         if (team == null)
         {

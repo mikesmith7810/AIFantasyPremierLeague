@@ -1,4 +1,3 @@
-using AIFantasyPremierLeague.API.Models;
 using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Data;
@@ -65,7 +64,7 @@ public class PredictionService(IRepository<PlayerEntity> playerRepository, IRepo
             Points = playerPerformanceEntity.Stats.Points
         })];
     }
-    public PlayerPrediction GetPredictionHighestPointsAsync()
+    public async Task<PlayerPrediction> GetPredictionHighestPointsAsync()
     {
         var futureInput = new PlayerTrainingData
         {

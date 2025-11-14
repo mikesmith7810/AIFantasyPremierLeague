@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.Models;
 using AIFantasyPremierLeague.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,21 +7,13 @@ namespace AIFantasyPremierLeague.API.Controllers;
 
 [ApiController]
 [Route("player")]
-public class PlayerController : ControllerBase
+public class PlayerController(IPlayerService playerService) : ControllerBase
 {
-
-    private readonly IPlayerService _playerService;
-
-    public PlayerController(IPlayerService playerService)
-    {
-        _playerService = playerService;
-    }
-
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<ActionResult<Player>> AddPlayer([FromBody] Player player)
     {
-        Player createdPlayer = await _playerService.AddPlayerAsync(player);
+        var createdPlayer = await playerService.AddPlayerAsync(player);
 
         return CreatedAtAction(
             nameof(GetPlayer),
@@ -35,7 +25,7 @@ public class PlayerController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Player>> GetPlayer(string id)
     {
-        var player = await _playerService.GetPlayerAsync(id);
+        var player = await playerService.GetPlayerAsync(id);
 
         if (player == null)
         {
@@ -49,7 +39,7 @@ public class PlayerController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<ActionResult<IEnumerable<Player>>> GetPlayers()
     {
-        IEnumerable<Player> players = await _playerService.GetPlayersAsync();
+        var players = await playerService.GetPlayersAsync();
 
         if (players == null || !players.Any())
         {

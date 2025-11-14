@@ -1,7 +1,5 @@
-public class PlayerNotFoundException : Exception
+namespace AIFantasyPremierLeague.API.Exceptions;
+
+public class PlayerNotFoundException(string playerId) : Exception($"Player with ID '{playerId}' was not found")
 {
-    public PlayerNotFoundException(string playerId)
-         : base($"Player with ID '{playerId}' was not found")
-    {
-    }
 }

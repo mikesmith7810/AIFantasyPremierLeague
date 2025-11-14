@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Data;
 using AIFantasyPremierLeague.API.Models;
+using AIFantasyPremierLeague.API.Exceptions;
 
 
 namespace AIFantasyPremierLeague.Tests;
