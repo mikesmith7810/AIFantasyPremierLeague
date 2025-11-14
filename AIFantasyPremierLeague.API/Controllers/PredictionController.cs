@@ -13,7 +13,7 @@ public class PredictionController(IPredictionService predictionService) : Contro
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<ActionResult<PlayerPrediction>> GetPredictions()
     {
-        var playerPrediction = predictionService.GetPredictionHighestPointsAsync();
+        var playerPrediction = predictionService.GetPredictionHighestPoints();
 
         if (playerPrediction == null)
         {

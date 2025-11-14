@@ -1,3 +1,4 @@
+using AIFantasyPremierLeague.API.DataGatherers;
 using AIFantasyPremierLeague.API.Exceptions;
 using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Repository;
@@ -29,11 +30,16 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<NotFoundFilter>();
 });
 
+builder.Services.AddScoped<IPlayerPerformanceRepository, PlayerPerformanceRepository>();
+builder.Services.AddScoped<AverageGoalsCalculator>();
+builder.Services.AddScoped<AveragePointsCalculator>();
+builder.Services.AddScoped<AverageMinsPlayedCalculator>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IPlayerPerformanceService, PlayerPerformanceService>();
 builder.Services.AddScoped<IFPLDataService, FPLDataService>();
 builder.Services.AddScoped<IPredictionService, PredictionService>();
+
 
 builder.Services.AddHttpClient("FPLApi", client =>
 {

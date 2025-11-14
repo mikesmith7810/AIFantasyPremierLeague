@@ -1,3 +1,4 @@
+using AIFantasyPremierLeague.API.DataGatherers;
 using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Data;
@@ -6,13 +7,8 @@ using Microsoft.ML;
 
 namespace AIFantasyPremierLeague.API.Services;
 
-public class PredictionService(IRepository<PlayerEntity> playerRepository, IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool) : IPredictionService
+public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool, AverageGoalsCalculator averageGoalsCalculator, AveragePointsCalculator averagePointsCalculator, AverageMinsPlayedCalculator averageMinsPlayedCalculator) : IPredictionService
 {
-    private readonly IRepository<PlayerEntity> _playerRepository = playerRepository;
-    private readonly IRepository<PlayerPerformanceEntity> _playerPerformanceRepository = playerPerformanceRepository;
-
-    private readonly PredictionEnginePool<PlayerTrainingData, PlayerPrediction> _predictionEnginePool = predictionEnginePool;
-
     private readonly MLContext _mlContext = new MLContext();
     private ITransformer? _trainedModel;
 
@@ -20,8 +16,9 @@ public class PredictionService(IRepository<PlayerEntity> playerRepository, IRepo
     {
         var modelPath = "fplModel.zip";
 
-        var playerPerformanceEntities = await _playerPerformanceRepository.GetAllAsync();
-        List<PlayerTrainingData> playerTrainingData = MapToTrainingData(playerPerformanceEntities);
+        var playerPerformanceEntities = await playerPerformanceRepository.GetAllAsync();
+
+        List<PlayerTrainingData> playerTrainingData = await MapToTrainingData(playerPerformanceEntities);
 
         IDataView dataView = _mlContext.Data.LoadFromEnumerable(playerTrainingData);
 
@@ -31,11 +28,12 @@ public class PredictionService(IRepository<PlayerEntity> playerRepository, IRepo
           inputColumnName: "PlayerId",
           numberOfBits: 20)
         .Append(_mlContext.Transforms.Concatenate(
-          "Features",
-          "PlayerIdEncoded",
-          "Goals",
-          "Assists",
-          "MinsPlayed"))
+            "Features",
+            "PlayerIdEncoded",
+            "AverageGoalsLast5Games",
+            "AveragePointsLast5Games",
+            "AverageMinsPlayedLast5Games"
+          ))
         .Append(_mlContext.Regression.Trainers.FastTree());
 
         _trainedModel = pipeline.Fit(dataView);
@@ -53,30 +51,37 @@ public class PredictionService(IRepository<PlayerEntity> playerRepository, IRepo
 
     }
 
-    private static List<PlayerTrainingData> MapToTrainingData(IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities)
-    {
-        return [.. playerPerformanceEntities.Select(playerPerformanceEntity => new PlayerTrainingData
-        {
-            PlayerId = playerPerformanceEntity.PlayerId,
-            Goals = playerPerformanceEntity.Stats.Goals,
-            Assists = playerPerformanceEntity.Stats.Assists,
-            MinsPlayed = playerPerformanceEntity.Stats.MinsPlayed,
-            Points = playerPerformanceEntity.Stats.Points
-        })];
-    }
-    public async Task<PlayerPrediction> GetPredictionHighestPointsAsync()
+    public PlayerPrediction GetPredictionHighestPoints()
     {
         var futureInput = new PlayerTrainingData
         {
             PlayerId = "player414",
-            Goals = 1f,
-            Assists = 1f,
-            MinsPlayed = 78f,
+            AverageGoalsLast5Games = 3,
+            AveragePointsLast5Games = 6,
+            AverageMinsPlayedLast5Games = 79,
             Points = 0f
         };
 
-        PlayerPrediction playerPrediction = _predictionEnginePool.Predict(futureInput);
+        PlayerPrediction playerPrediction = predictionEnginePool.Predict(futureInput);
         return playerPrediction;
     }
+
+    private async Task<List<PlayerTrainingData>> MapToTrainingData(IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities)
+    {
+        var trainingDataList = new List<PlayerTrainingData>();
+        foreach (var playerPerformanceEntity in playerPerformanceEntities)
+        {
+            trainingDataList.Add(new PlayerTrainingData
+            {
+                PlayerId = playerPerformanceEntity.PlayerId,
+                AverageGoalsLast5Games = (float)await averageGoalsCalculator.CalculateAverageGoalsForPlayer(playerPerformanceEntity.PlayerId, 5),
+                AveragePointsLast5Games = (float)await averagePointsCalculator.CalculateAveragePointsForPlayer(playerPerformanceEntity.PlayerId, 5),
+                AverageMinsPlayedLast5Games = (float)await averageMinsPlayedCalculator.CalculateAverageMinsPlayedForPlayer(playerPerformanceEntity.PlayerId, 5),
+                Points = playerPerformanceEntity.Stats.Points
+            });
+        }
+        return trainingDataList;
+    }
+
 }
 
