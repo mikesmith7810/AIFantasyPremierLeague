@@ -65,10 +65,19 @@ public class PredictionService(IRepository<PlayerEntity> playerRepository, IRepo
             Points = playerPerformanceEntity.Stats.Points
         })];
     }
-
-    public Task<PredictionHighestPoints> GetPredictionHighestPointsAsync()
+    public PlayerPrediction GetPredictionHighestPointsAsync()
     {
-        throw new NotImplementedException();
+        var futureInput = new PlayerTrainingData
+        {
+            PlayerId = "player414",
+            Goals = 1f,
+            Assists = 1f,
+            MinsPlayed = 78f,
+            Points = 0f
+        };
+
+        PlayerPrediction playerPrediction = _predictionEnginePool.Predict(futureInput);
+        return playerPrediction;
     }
 }
 

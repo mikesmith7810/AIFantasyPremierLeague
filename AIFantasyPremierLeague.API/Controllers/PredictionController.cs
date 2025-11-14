@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.Models;
+using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,16 +23,16 @@ public class PredictionController : ControllerBase
 
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<ActionResult<PredictionHighestPoints>> GetPredictions()
+    public async Task<ActionResult<PlayerPrediction>> GetPredictions()
     {
-        PredictionHighestPoints predictionHighestPoints = await _predictionService.GetPredictionHighestPointsAsync();
+        PlayerPrediction playerPrediction = _predictionService.GetPredictionHighestPointsAsync();
 
-        if (predictionHighestPoints == null)
+        if (playerPrediction == null)
         {
             return NotFound();
         }
 
-        return Ok(predictionHighestPoints);
+        return Ok(playerPrediction);
     }
 
     [HttpPost("train")]
