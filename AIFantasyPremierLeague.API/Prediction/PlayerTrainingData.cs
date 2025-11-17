@@ -11,9 +11,23 @@ public class PlayerTrainingData
 
     public float AverageGoalsLast5Games { get; set; }
 
+    public float AverageAssistsLast5Games { get; set; }
+
     public float AveragePointsLast5Games { get; set; }
 
     public float AverageMinsPlayedLast5Games { get; set; }
+
+    public float AverageBonusLast5Games { get; set; }
+
+    public float AverageCleanSheetsLast5Games { get; set; }
+
+    public float AverageGoalsConcededLast5Games { get; set; }
+
+    public float AverageYellowCardsLast5Games { get; set; }
+
+    public float AverageRedCardsLast5Games { get; set; }
+
+    public float AverageSavesLast5Games { get; set; }
 
     [ColumnName("Label")]
     public float Points { get; set; }

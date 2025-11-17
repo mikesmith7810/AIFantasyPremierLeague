@@ -2,11 +2,12 @@ using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Data;
 namespace AIFantasyPremierLeague.API.DataGatherers;
-public class AveragePointsCalculator(IPlayerPerformanceRepository playerPerformanceRepository)
+
+public class AveragePointsCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPerformanceCalculator
 {
-    public async Task<double> CalculateAveragePointsForPlayer(string PlayerId, int numberOfWeeks)
+    public async Task<double> Calculate(string PlayerId, int NumberOfWeeks)
     {
-        IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities = await playerPerformanceRepository.GetLastNWeeksForPlayerAsync(PlayerId, numberOfWeeks);
+        IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities = await playerPerformanceRepository.GetLastNWeeksForPlayerAsync(PlayerId, NumberOfWeeks);
 
         if (!playerPerformanceEntities.Any())
             return 0f;

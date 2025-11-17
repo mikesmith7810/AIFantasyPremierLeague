@@ -7,7 +7,7 @@ using Microsoft.ML;
 
 namespace AIFantasyPremierLeague.API.Services;
 
-public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool, AverageGoalsCalculator averageGoalsCalculator, AveragePointsCalculator averagePointsCalculator, AverageMinsPlayedCalculator averageMinsPlayedCalculator) : IPredictionService
+public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool, AverageGoalsCalculator averageGoalsCalculator, AverageAssistsCalculator averageAssistsCalculator, AveragePointsCalculator averagePointsCalculator, AverageMinsPlayedCalculator averageMinsPlayedCalculator, AverageBonusCalculator averageBonusCalculator, AverageCleanSheetsCalculator averageCleanSheetsCalculator, AverageGoalsConcededCalculator averageGoalsConcededCalculator, AverageYellowCardsCalculator averageYellowCardsCalculator, AverageRedCardsCalculator averageRedCardsCalculator, AverageSavesCalculator averageSavesCalculator) : IPredictionService
 {
     private readonly MLContext _mlContext = new MLContext();
     private ITransformer? _trainedModel;
@@ -31,8 +31,15 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
             "Features",
             "PlayerIdEncoded",
             "AverageGoalsLast5Games",
+            "AverageAssistsLast5Games",
             "AveragePointsLast5Games",
-            "AverageMinsPlayedLast5Games"
+            "AverageMinsPlayedLast5Games",
+            "AverageBonusLast5Games",
+            "AverageCleanSheetsLast5Games",
+            "AverageGoalsConcededLast5Games",
+            "AverageYellowCardsLast5Games",
+            "AverageRedCardsLast5Games",
+            "AverageSavesLast5Games"
           ))
         .Append(_mlContext.Regression.Trainers.FastTree());
 
@@ -74,9 +81,16 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
             trainingDataList.Add(new PlayerTrainingData
             {
                 PlayerId = playerPerformanceEntity.PlayerId,
-                AverageGoalsLast5Games = (float)await averageGoalsCalculator.CalculateAverageGoalsForPlayer(playerPerformanceEntity.PlayerId, 5),
-                AveragePointsLast5Games = (float)await averagePointsCalculator.CalculateAveragePointsForPlayer(playerPerformanceEntity.PlayerId, 5),
-                AverageMinsPlayedLast5Games = (float)await averageMinsPlayedCalculator.CalculateAverageMinsPlayedForPlayer(playerPerformanceEntity.PlayerId, 5),
+                AverageGoalsLast5Games = (float)await averageGoalsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageAssistsLast5Games = (float)await averageAssistsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AveragePointsLast5Games = (float)await averagePointsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageMinsPlayedLast5Games = (float)await averageMinsPlayedCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageBonusLast5Games = (float)await averageBonusCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageCleanSheetsLast5Games = (float)await averageCleanSheetsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageGoalsConcededLast5Games = (float)await averageGoalsConcededCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageYellowCardsLast5Games = (float)await averageYellowCardsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageRedCardsLast5Games = (float)await averageRedCardsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                AverageSavesLast5Games = (float)await averageSavesCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
                 Points = playerPerformanceEntity.Stats.Points
             });
         }

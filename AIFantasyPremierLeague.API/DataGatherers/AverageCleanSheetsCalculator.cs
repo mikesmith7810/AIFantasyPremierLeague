@@ -1,9 +1,9 @@
-using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Data;
+
 namespace AIFantasyPremierLeague.API.DataGatherers;
 
-public class AverageMinsPlayedCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPerformanceCalculator
+public class AverageCleanSheetsCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPerformanceCalculator
 {
     public async Task<double> Calculate(string PlayerId, int NumberOfWeeks)
     {
@@ -12,6 +12,6 @@ public class AverageMinsPlayedCalculator(IPlayerPerformanceRepository playerPerf
         if (!playerPerformanceEntities.Any())
             return 0f;
 
-        return playerPerformanceEntities.Average(p => p.Stats.MinsPlayed);
+        return playerPerformanceEntities.Average(p => p.Stats.CleanSheets);
     }
 }
