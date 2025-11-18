@@ -24,6 +24,14 @@ public class FPLDataController : ControllerBase
         return Created();
     }
 
+    [HttpPost("teamsKnownData")]
+    public async Task<ActionResult<Team>> LoadTeamsKnownData()
+    {
+
+        await _fplDataService.LoadTeamsKnownDataAsync();
+        return Created();
+    }
+
     [HttpPost("playersPerformanceData/{gameWeek}")]
     public async Task<ActionResult<Player>> LoadPlayersPerformanceData(int gameWeek)
     {

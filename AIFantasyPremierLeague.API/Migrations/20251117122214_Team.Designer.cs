@@ -3,6 +3,7 @@ using AIFantasyPremierLeague.API.Repository.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AIFantasyPremierLeague.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251117122214_Team")]
+    partial class Team
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,13 +63,7 @@ namespace AIFantasyPremierLeague.API.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int>("FixtureId")
-                        .HasColumnType("int");
-
                     b.Property<int>("GameWeek")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OpponentTeam")
                         .HasColumnType("int");
 
                     b.Property<string>("PlayerId")
@@ -81,24 +78,21 @@ namespace AIFantasyPremierLeague.API.Migrations
 
             modelBuilder.Entity("AIFantasyPremierLeague.API.Repository.Data.TeamEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)")
                         .HasAnnotation("Relational:JsonPropertyName", "code");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
-                        .HasAnnotation("Relational:JsonPropertyName", "name");
+                        .HasAnnotation("Relational:JsonPropertyName", "bonus");
 
                     b.Property<string>("ShortName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
-                        .HasAnnotation("Relational:JsonPropertyName", "short_name");
+                        .HasAnnotation("Relational:JsonPropertyName", "bonus");
 
                     b.HasKey("Id");
 

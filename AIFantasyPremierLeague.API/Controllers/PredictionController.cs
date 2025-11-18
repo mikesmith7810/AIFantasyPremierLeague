@@ -11,7 +11,7 @@ public class PredictionController(IPredictionService predictionService) : Contro
 {
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<ActionResult<PlayerPrediction>> GetPredictions()
+    public ActionResult<PlayerPrediction> GetPredictions()
     {
         var playerPrediction = predictionService.GetPredictionHighestPoints();
 

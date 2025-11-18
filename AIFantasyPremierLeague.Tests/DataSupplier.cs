@@ -52,28 +52,28 @@ public class DataSupplier
         return new()
         {
             Id = "performance2",
-            PlayerId = "player3",
+            PlayerId = "player2",
             Stats = new() { Points = 20, Goals = 3, Assists = 2, MinsPlayed = 78 }
         };
     }
 
     public static Team Team1()
     {
-        return new("team1", "Barcelona");
+        return new(1, "Barcelona", "BAR");
     }
 
     public static Team Team2()
     {
-        return new("team2", "Real Madrid");
+        return new(2, "Real Madrid", "RMA");
     }
 
     public static TeamEntity TeamEntity1()
     {
-        return new() { Id = "team1", Name = "Barcelona" };
+        return new() { Id = 1, Name = "Barcelona", ShortName = "BAR" };
     }
 
     public static TeamEntity TeamEntity2()
     {
-        return new() { Id = "team2", Name = "Real Madrid" };
+        return new() { Id = 2, Name = "Real Madrid", ShortName = "RMA" };
     }
 }

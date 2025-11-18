@@ -18,6 +18,10 @@ public class PlayerPerformanceEntity
 
     public int GameWeek { get; set; }
 
+    public int FixtureId { get; set; }
+
+    public int OpponentTeam { get; set; }
+
     [Required]
     [JsonPropertyName("stats")]
     [JsonConverter(typeof(StatsConverter))]

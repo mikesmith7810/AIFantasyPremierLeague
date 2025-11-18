@@ -11,16 +11,16 @@ public class TeamService(IRepository<TeamEntity> teamRepository) : ITeamService
     {
         var teams = await teamRepository.GetAllAsync();
 
-        return teams.Select(teamEntity => new Team(teamEntity.Id, teamEntity.Name));
+        return teams.Select(teamEntity => new Team(teamEntity.Id, teamEntity.Name, teamEntity.ShortName));
     }
 
     public async Task<Team> AddTeamAsync(Team team)
     {
-        TeamEntity teamEntity = new() { Id = team.Id, Name = team.Name, };
+        TeamEntity teamEntity = new() { Id = team.Id, Name = team.Name, ShortName = team.ShortName };
 
         var response = await teamRepository.AddAsync(teamEntity);
 
-        return new Team(response.Id, response.Name);
+        return new Team(response.Id, response.Name, response.ShortName);
 
     }
 
@@ -28,7 +28,7 @@ public class TeamService(IRepository<TeamEntity> teamRepository) : ITeamService
     {
         TeamEntity? teamEntity = await teamRepository.GetByIdAsync(teamId) ?? throw new TeamNotFoundException(teamId);
 
-        return new Team(teamEntity.Id, teamEntity.Name);
+        return new Team(teamEntity.Id, teamEntity.Name, teamEntity.ShortName);
     }
 }
 
