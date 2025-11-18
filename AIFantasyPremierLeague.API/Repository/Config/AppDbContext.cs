@@ -6,6 +6,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<TeamEntity> Teams { get; set; }
 
+    public DbSet<TeamHistoryEntity> TeamHistorys { get; set; }
+
     public DbSet<PlayerEntity> Players { get; set; }
 
     public DbSet<PlayerPerformanceEntity> PlayerHistory { get; set; }

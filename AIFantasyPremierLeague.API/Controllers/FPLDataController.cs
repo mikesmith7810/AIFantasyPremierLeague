@@ -38,5 +38,12 @@ public class FPLDataController : ControllerBase
         await _fplDataService.LoadPlayersPerformanceDataAsync(gameWeek);
         return Created();
     }
+
+    [HttpPost("teamPerformanceData/{gameWeek}")]
+    public async Task<ActionResult<Player>> LoadTeamFixtureHistoryData(int gameWeek)
+    {
+        await _fplDataService.LoadTeamFixtureHistoryData(gameWeek);
+        return Created();
+    }
 }
 

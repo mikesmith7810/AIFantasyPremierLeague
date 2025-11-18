@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace AIFantasyPremierLeague.API.Services;
 
-public class FPLDataService(IRepository<PlayerEntity> playerRepository, IRepository<TeamEntity> teamRepository, IRepository<PlayerPerformanceEntity> playerPerformanceRepository, IHttpClientFactory httpClientFactory, ILogger<FPLDataService> logger) : IFPLDataService
+public class FPLDataService(IRepository<PlayerEntity> playerRepository, IRepository<TeamEntity> teamRepository, IRepository<TeamHistoryEntity> teamHistoryRepository, IPlayerPerformanceRepository playerPerformanceRepository, IHttpClientFactory httpClientFactory, ILogger<FPLDataService> logger) : IFPLDataService
 {
     private const string FPL_DATA_ENDPOINT = "/api/bootstrap-static/";
     private const string FPL_API = "FPLApi";
@@ -41,13 +41,6 @@ public class FPLDataService(IRepository<PlayerEntity> playerRepository, IReposit
 
     public async Task LoadTeamsKnownDataAsync()
     {
-        await LoadTeamData();
-
-        //await LoadTeamFixtureHistoryData();
-    }
-
-    private async Task LoadTeamData()
-    {
         var response = await httpClientFactory.CreateClient(FPL_API).GetAsync(FPL_DATA_ENDPOINT);
 
         var jsonString = await response.Content.ReadAsStringAsync();
@@ -72,29 +65,21 @@ public class FPLDataService(IRepository<PlayerEntity> playerRepository, IReposit
         }
     }
 
-    private async Task LoadTeamFixtureHistoryData()
+    public async Task LoadTeamFixtureHistoryData(int gameWeek)
     {
-        var response = await httpClientFactory.CreateClient(FPL_API).GetAsync(FPL_DATA_ENDPOINT);
+        IEnumerable<TeamEntity> teams = await teamRepository.GetAllAsync();
 
-        var jsonString = await response.Content.ReadAsStringAsync();
-
-        var options = new JsonSerializerOptions
+        foreach (var team in teams)
         {
-            PropertyNameCaseInsensitive = true,
-            AllowTrailingCommas = true
-        };
-
-        FPLTeamData? fplData = JsonSerializer.Deserialize<FPLTeamData>(jsonString, options);
-
-        if (fplData?.Teams == null)
-        {
-            logger.LogWarning("No team elements found in FPL API response");
-            return;
-        }
-
-        foreach (var team in fplData.Teams)
-        {
-            await teamRepository.AddAsync(team);
+            var teamTotalPointsConceded = await playerPerformanceRepository.GetTeamTotalPointsConcededForGameWeek(team.Id, gameWeek);
+            var teamHistoryEntity = new TeamHistoryEntity
+            {
+                Id = $"teamHistory_{Guid.NewGuid().ToString("N")[..8]}",
+                TeamId = team.Id,
+                Week = gameWeek,
+                PointsConceded = teamTotalPointsConceded
+            };
+            await teamHistoryRepository.AddAsync(teamHistoryEntity);
         }
     }
 

@@ -21,4 +21,11 @@ public class PlayerPerformanceRepository(AppDbContext context) : Repository<Play
             .Take(numberOfWeeks)
             .ToListAsync();
     }
+
+    public async Task<int> GetTeamTotalPointsConcededForGameWeek(int teamId, int week)
+    {
+        return await _dbSet
+            .Where(p => p.OpponentTeam == teamId && p.GameWeek == week)
+            .SumAsync(p => p.Stats.Points);
+    }
 }

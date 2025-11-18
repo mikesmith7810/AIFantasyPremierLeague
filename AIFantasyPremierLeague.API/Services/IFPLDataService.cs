@@ -5,5 +5,7 @@ public interface IFPLDataService
 
     Task LoadTeamsKnownDataAsync();
 
+    Task LoadTeamFixtureHistoryData(int gameWeek);
+
     Task LoadPlayersPerformanceDataAsync(int gameWeek);
 }

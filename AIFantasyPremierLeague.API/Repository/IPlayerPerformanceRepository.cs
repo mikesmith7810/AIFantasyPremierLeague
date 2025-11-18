@@ -6,4 +6,5 @@ public interface IPlayerPerformanceRepository : IRepository<PlayerPerformanceEnt
 {
     Task<IEnumerable<PlayerPerformanceEntity>> GetByPlayerIdAsync(string playerId);
     Task<IEnumerable<PlayerPerformanceEntity>> GetLastNWeeksForPlayerAsync(string playerId, int numberOfWeeks);
+    Task<int> GetTeamTotalPointsConcededForGameWeek(int teamId, int week);
 }
