@@ -29,6 +29,8 @@ public class PlayerTrainingData
 
     public float AverageSavesLast5Games { get; set; }
 
+    public float OppositionAveragePointsConcededLast5Games { get; set; }
+
     [ColumnName("Label")]
     public float Points { get; set; }
 }

@@ -3,7 +3,7 @@ using AIFantasyPremierLeague.API.Repository.Data;
 
 namespace AIFantasyPremierLeague.API.DataGatherers;
 
-public class AverageCleanSheetsCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPerformanceCalculator
+public class AverageCleanSheetsCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPlayerCalculator
 {
     public async Task<double> Calculate(string PlayerId, int NumberOfWeeks)
     {

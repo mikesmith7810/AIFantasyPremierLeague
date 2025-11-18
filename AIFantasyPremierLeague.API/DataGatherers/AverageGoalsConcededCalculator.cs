@@ -3,7 +3,7 @@ using AIFantasyPremierLeague.API.Repository.Data;
 
 namespace AIFantasyPremierLeague.API.DataGatherers;
 
-public class AverageGoalsConcededCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPerformanceCalculator
+public class AverageGoalsConcededCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPlayerCalculator
 {
     public async Task<double> Calculate(string PlayerId, int NumberOfWeeks)
     {

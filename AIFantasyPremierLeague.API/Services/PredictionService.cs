@@ -7,7 +7,7 @@ using Microsoft.ML;
 
 namespace AIFantasyPremierLeague.API.Services;
 
-public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool, AverageGoalsCalculator averageGoalsCalculator, AverageAssistsCalculator averageAssistsCalculator, AveragePointsCalculator averagePointsCalculator, AverageMinsPlayedCalculator averageMinsPlayedCalculator, AverageBonusCalculator averageBonusCalculator, AverageCleanSheetsCalculator averageCleanSheetsCalculator, AverageGoalsConcededCalculator averageGoalsConcededCalculator, AverageYellowCardsCalculator averageYellowCardsCalculator, AverageRedCardsCalculator averageRedCardsCalculator, AverageSavesCalculator averageSavesCalculator) : IPredictionService
+public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool, AverageGoalsCalculator averageGoalsCalculator, AverageAssistsCalculator averageAssistsCalculator, AveragePointsCalculator averagePointsCalculator, AverageMinsPlayedCalculator averageMinsPlayedCalculator, AverageBonusCalculator averageBonusCalculator, AverageCleanSheetsCalculator averageCleanSheetsCalculator, AverageGoalsConcededCalculator averageGoalsConcededCalculator, AverageYellowCardsCalculator averageYellowCardsCalculator, AverageRedCardsCalculator averageRedCardsCalculator, AverageSavesCalculator averageSavesCalculator, OppositionAveragePointsConcededCalculator oppositionAveragePointsConcededCalculator, ILogger<PredictionService> logger) : IPredictionService
 {
     private readonly MLContext _mlContext = new MLContext();
     private ITransformer? _trainedModel;
@@ -39,7 +39,8 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
             "AverageGoalsConcededLast5Games",
             "AverageYellowCardsLast5Games",
             "AverageRedCardsLast5Games",
-            "AverageSavesLast5Games"
+            "AverageSavesLast5Games",
+            "OppositionAveragePointsConcededLast5Games"
           ))
         .Append(_mlContext.Regression.Trainers.FastTree());
 
@@ -76,8 +77,24 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
     private async Task<List<PlayerTrainingData>> MapToTrainingData(IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities)
     {
         var trainingDataList = new List<PlayerTrainingData>();
-        foreach (var playerPerformanceEntity in playerPerformanceEntities)
+        var entityList = playerPerformanceEntities.ToList();
+        var totalCount = entityList.Count;
+        var progressInterval = Math.Max(1, totalCount / 10); // Every 10%
+
+        logger.LogInformation("Starting training data mapping for {TotalCount} player performance entities", totalCount);
+
+        for (int i = 0; i < entityList.Count; i++)
         {
+            var playerPerformanceEntity = entityList[i];
+
+            // Log progress every 10%
+            if ((i + 1) % progressInterval == 0 || i == entityList.Count - 1)
+            {
+                var progressPercentage = Math.Round(((double)(i + 1) / totalCount) * 100, 1);
+                logger.LogInformation("Processing training data: {Progress}% ({Current}/{Total})",
+                    progressPercentage, i + 1, totalCount);
+            }
+
             trainingDataList.Add(new PlayerTrainingData
             {
                 PlayerId = playerPerformanceEntity.PlayerId,
@@ -91,9 +108,12 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
                 AverageYellowCardsLast5Games = (float)await averageYellowCardsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
                 AverageRedCardsLast5Games = (float)await averageRedCardsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
                 AverageSavesLast5Games = (float)await averageSavesCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
+                OppositionAveragePointsConcededLast5Games = (float)await oppositionAveragePointsConcededCalculator.Calculate(playerPerformanceEntity.OpponentTeam, 5),
                 Points = playerPerformanceEntity.Stats.Points
             });
         }
+
+        logger.LogInformation("Completed training data mapping for {TotalCount} entities", totalCount);
         return trainingDataList;
     }
 

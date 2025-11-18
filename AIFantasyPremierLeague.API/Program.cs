@@ -31,6 +31,7 @@ builder.Services.AddControllers(options =>
 });
 
 builder.Services.AddScoped<IPlayerPerformanceRepository, PlayerPerformanceRepository>();
+builder.Services.AddScoped<ITeamHistoryRepository, TeamHistoryRepository>();
 builder.Services.AddScoped<AverageGoalsCalculator>();
 builder.Services.AddScoped<AverageAssistsCalculator>();
 builder.Services.AddScoped<AveragePointsCalculator>();
@@ -41,6 +42,7 @@ builder.Services.AddScoped<AverageGoalsConcededCalculator>();
 builder.Services.AddScoped<AverageYellowCardsCalculator>();
 builder.Services.AddScoped<AverageRedCardsCalculator>();
 builder.Services.AddScoped<AverageSavesCalculator>();
+builder.Services.AddScoped<OppositionAveragePointsConcededCalculator>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IPlayerPerformanceService, PlayerPerformanceService>();
