@@ -22,6 +22,10 @@ public class PlayerPerformanceEntity
 
     public int OpponentTeam { get; set; }
 
+    public int IsHome { get; set; }
+
+    public int Position { get; set; }
+
     [Required]
     [JsonPropertyName("stats")]
     [JsonConverter(typeof(StatsConverter))]

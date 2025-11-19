@@ -37,7 +37,7 @@ public class TeamController(ITeamService teamService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Team>> GetTeam(string id)
+    public async Task<ActionResult<Team>> GetTeam(int id)
     {
         var team = await teamService.GetTeamAsync(id);
 

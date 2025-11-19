@@ -7,5 +7,5 @@ public interface ITeamService
 
     Task<Team> AddTeamAsync(Team team);
 
-    Task<Team> GetTeamAsync(string teamId);
+    Task<Team> GetTeamAsync(int teamId);
 }

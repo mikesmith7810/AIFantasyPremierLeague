@@ -51,10 +51,10 @@ public class PlayerServiceTest : DataSupplier
     {
         PlayerEntity mockPlayer = PlayerEntity1();
 
-        _playerRepository.Setup(playerRepository => playerRepository.GetByIdAsync("player1"))
+        _playerRepository.Setup(playerRepository => playerRepository.GetByIdAsync(1))
                 .ReturnsAsync(mockPlayer);
 
-        Player player = await _playerService.GetPlayerAsync("player1");
+        Player player = await _playerService.GetPlayerAsync(1);
 
         player.Should().NotBeNull();
         player.Should().BeEquivalentTo(
@@ -80,11 +80,11 @@ public class PlayerServiceTest : DataSupplier
     [Fact]
     public async Task GetNonExistingPlayer_ThrowsPlayerNotFoundException()
     {
-        _playerRepository.Setup(playerRepository => playerRepository.GetByIdAsync("player1"))
+        _playerRepository.Setup(playerRepository => playerRepository.GetByIdAsync(1))
                 .ReturnsAsync((PlayerEntity)null);
 
-        await _playerService.Invoking(s => s.GetPlayerAsync("player1"))
+        await _playerService.Invoking(s => s.GetPlayerAsync(1))
                       .Should().ThrowAsync<PlayerNotFoundException>()
-                      .WithMessage($"Player with ID 'player1' was not found");
+                      .WithMessage($"Player with ID '1' was not found");
     }
 }

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.DataGatherers;
+using AIFantasyPremierLeague.API.Models;
 using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Repository;
 using AIFantasyPremierLeague.API.Repository.Data;
@@ -8,7 +9,7 @@ using Microsoft.ML;
 
 namespace AIFantasyPremierLeague.API.Services;
 
-public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerformanceRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool, AverageGoalsCalculator averageGoalsCalculator, AverageAssistsCalculator averageAssistsCalculator, AveragePointsCalculator averagePointsCalculator, AverageMinsPlayedCalculator averageMinsPlayedCalculator, AverageBonusCalculator averageBonusCalculator, AverageCleanSheetsCalculator averageCleanSheetsCalculator, AverageGoalsConcededCalculator averageGoalsConcededCalculator, AverageYellowCardsCalculator averageYellowCardsCalculator, AverageRedCardsCalculator averageRedCardsCalculator, AverageSavesCalculator averageSavesCalculator, OppositionAveragePointsConcededCalculator oppositionAveragePointsConcededCalculator, ILogger<PredictionService> logger) : IPredictionService
+public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerformanceRepository, IRepository<PlayerEntity> playerRepository, PredictionEnginePool<PlayerTrainingData, PlayerPrediction> predictionEnginePool, AverageGoalsCalculator averageGoalsCalculator, AverageAssistsCalculator averageAssistsCalculator, AveragePointsCalculator averagePointsCalculator, AverageMinsPlayedCalculator averageMinsPlayedCalculator, AverageBonusCalculator averageBonusCalculator, AverageCleanSheetsCalculator averageCleanSheetsCalculator, AverageGoalsConcededCalculator averageGoalsConcededCalculator, AverageYellowCardsCalculator averageYellowCardsCalculator, AverageRedCardsCalculator averageRedCardsCalculator, AverageSavesCalculator averageSavesCalculator, OppositionAveragePointsConcededCalculator oppositionAveragePointsConcededCalculator, IPlayerService playerService, ILogger<PredictionService> logger) : IPredictionService
 {
     private readonly MLContext _mlContext = new MLContext();
     private ITransformer? _trainedModel;
@@ -41,7 +42,9 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
             "AverageYellowCardsLast5Games",
             "AverageRedCardsLast5Games",
             "AverageSavesLast5Games",
-            "OppositionAveragePointsConcededLast5Games"
+            "OppositionAveragePointsConcededLast5Games",
+            "IsHome",
+            "Position"
           ))
         .Append(_mlContext.Regression.Trainers.FastTree());
 
@@ -60,33 +63,55 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
 
     }
 
-    public PlayerPrediction GetPredictionHighestPoints()
+    public async Task<IEnumerable<PlayerPrediction>> GetPredictionHighestPoints(int GameWeek, string Position)
     {
+        var players = await playerService.GetPlayersAsync();
+        var predictions = new List<PlayerPrediction>();
 
-        var futureInput = new PlayerTrainingData
+        foreach (var player in players)
         {
-            PlayerId = 414,
-            AverageGoalsLast5Games = 3,
-            AverageAssistsLast5Games = 0,
-            AveragePointsLast5Games = 6,
-            AverageMinsPlayedLast5Games = 79,
-            AverageBonusLast5Games = 0,
-            AverageCleanSheetsLast5Games = 0,
-            AverageGoalsConcededLast5Games = 0,
-            AverageYellowCardsLast5Games = 0,
-            AverageRedCardsLast5Games = 0,
-            AverageSavesLast5Games = 0,
-            OppositionAveragePointsConcededLast5Games = 0,
-            Points = 0f
-        };
+            if (player.Position.ToString().Equals(Position))
+            {
+                PlayerEntity? playerEntity = await playerRepository.GetByIdAsync(player.Id);
+                // get is home from team fixtures based upon gameweek form teamid in above player entity - update below.
 
-        PlayerPrediction playerPrediction = predictionEnginePool.Predict(futureInput);
-        return playerPrediction;
+                if (playerEntity == null) continue;
+
+                var futureInput = new PlayerTrainingData
+                {
+                    PlayerId = player.Id,
+                    AverageGoalsLast5Games = (float)await averageGoalsCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageAssistsLast5Games = (float)await averageAssistsCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AveragePointsLast5Games = (float)await averagePointsCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageMinsPlayedLast5Games = (float)await averageMinsPlayedCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageBonusLast5Games = (float)await averageBonusCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageCleanSheetsLast5Games = (float)await averageCleanSheetsCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageGoalsConcededLast5Games = (float)await averageGoalsConcededCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageYellowCardsLast5Games = (float)await averageYellowCardsCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageRedCardsLast5Games = (float)await averageRedCardsCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    AverageSavesLast5Games = (float)await averageSavesCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    OppositionAveragePointsConcededLast5Games = (float)await oppositionAveragePointsConcededCalculator.CalculateForGameWeek(player.Id, 5, GameWeek),
+                    IsHome = 1,
+                    Position = (float)player.Position,
+                    Points = 0f
+                };
+
+                PlayerPrediction playerPrediction = predictionEnginePool.Predict(futureInput);
+                playerPrediction.PlayerId = player.Id;
+                playerPrediction.PlayerFirstName = player.FirstName;
+                playerPrediction.PlayerSecondName = player.SecondName;
+                playerPrediction.Price = player.Price;
+                predictions.Add(playerPrediction);
+            }
+        }
+
+        return predictions.OrderByDescending(pp => pp.PredictedPoints);
     }
 
     public async Task<PlayerPrediction> GetPredictionForPlayer(int PlayerId, int GameWeek)
     {
-
+        PlayerEntity? playerEntity = await playerRepository.GetByIdAsync(PlayerId);
+        // get is home from team fixtures based upon gameweek form teamid in above player entity - update below.
 
         var futureInput = new PlayerTrainingData
         {
@@ -102,10 +127,18 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
             AverageRedCardsLast5Games = (float)await averageRedCardsCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
             AverageSavesLast5Games = (float)await averageSavesCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
             OppositionAveragePointsConcededLast5Games = (float)await oppositionAveragePointsConcededCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            IsHome = 1,
+            Position = (float)playerEntity.Position,
             Points = 0f
         };
 
+
         PlayerPrediction playerPrediction = predictionEnginePool.Predict(futureInput);
+        playerPrediction.PlayerId = PlayerId;
+        playerPrediction.PlayerFirstName = playerEntity.FirstName;
+        playerPrediction.PlayerSecondName = playerEntity.SecondName;
+        playerPrediction.Price = playerEntity.Price;
+
         return playerPrediction;
     }
 
@@ -144,6 +177,8 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
                 AverageRedCardsLast5Games = (float)await averageRedCardsCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
                 AverageSavesLast5Games = (float)await averageSavesCalculator.Calculate(playerPerformanceEntity.PlayerId, 5),
                 OppositionAveragePointsConcededLast5Games = (float)await oppositionAveragePointsConcededCalculator.Calculate(playerPerformanceEntity.OpponentTeam, 5),
+                IsHome = (float)playerPerformanceEntity.IsHome,
+                Position = (float)playerPerformanceEntity.Position,
                 Points = playerPerformanceEntity.Stats.Points
             });
         }

@@ -1,61 +1,45 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AIFantasyPremierLeague.API.Models;
 
 namespace AIFantasyPremierLeague.API.Converters;
 
-public class PositionConverter : JsonConverter<string>
+public class PositionConverter : JsonConverter<Position>
 {
-    private const string GK = "GK";
-    private const string DEF = "DEF";
-    private const string MID = "MID";
-    private const string ATT = "ATT";
-
-    private static readonly Dictionary<int, string> PositionMap = new()
-    {
-        { 1, GK },
-        { 2, DEF },
-        { 3, MID },
-        { 4, ATT }
-    };
-
-    private static readonly Dictionary<string, int> ReversePositionMap = new()
-    {
-        { GK, 1 },
-        { DEF, 2 },
-        { MID, 3 },
-        { ATT, 4 }
-    };
-
-    public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Position Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Number)
         {
-            int elementType = reader.GetInt32();
-            if (PositionMap.TryGetValue(elementType, out string? position))
+            var elementType = reader.GetInt32();
+            return elementType switch
             {
-                return position;
-            }
-            throw new JsonException($"Unknown element_type value: {elementType}");
+                1 => Position.GK,
+                2 => Position.DEF,
+                3 => Position.MID,
+                4 => Position.ATT,
+                _ => throw new JsonException($"Unknown position element_type: {elementType}")
+            };
         }
 
         if (reader.TokenType == JsonTokenType.String)
         {
-            string? value = reader.GetString();
-            return value ?? throw new JsonException("Position value cannot be null");
+            var positionString = reader.GetString()?.ToUpperInvariant();
+            return positionString switch
+            {
+                "GK" or "GOALKEEPER" => Position.GK,
+                "DEF" or "DEFENDER" => Position.DEF,
+                "MID" or "MIDFIELDER" => Position.MID,
+                "ATT" or "ATTACKER" or "FORWARD" => Position.ATT,
+                _ => throw new JsonException($"Unknown position string: {positionString}")
+            };
         }
 
-        throw new JsonException($"Expected number or string for element_type, got {reader.TokenType}");
+        throw new JsonException("Unable to convert to position enum");
     }
 
-    public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, Position value, JsonSerializerOptions options)
     {
-        if (ReversePositionMap.TryGetValue(value, out int elementType))
-        {
-            writer.WriteNumberValue(elementType);
-        }
-        else
-        {
-            throw new JsonException($"Unknown position value: {value}");
-        }
+        // Write back as the original element_type number for FPL API compatibility
+        writer.WriteNumberValue((int)value);
     }
 }

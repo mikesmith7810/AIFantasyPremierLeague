@@ -69,15 +69,15 @@ public class PlayerPerformanceControllerTest : DataSupplier
     {
         PlayerPerformance playerPerformance1 = PlayerPerformance1();
 
-        _playerPerformanceService.Setup(playerPerformanceService => playerPerformanceService.GetPlayerPerformanceAsync("playerPerformance1"))
+        _playerPerformanceService.Setup(playerPerformanceService => playerPerformanceService.GetPlayerPerformanceAsync(1))
                 .ReturnsAsync(playerPerformance1);
 
-        ActionResult<PlayerPerformance> response = await _playerPerformanceController.GetPlayerPerformance("playerPerformance1");
+        ActionResult<PlayerPerformance> response = await _playerPerformanceController.GetPlayerPerformance(1);
         OkObjectResult? result = response.Result as OkObjectResult;
         var playerPerformance = result?.Value as PlayerPerformance;
 
         playerPerformance.Should().BeEquivalentTo(playerPerformance1);
 
-        _playerPerformanceService.Verify(playerPerformanceService => playerPerformanceService.GetPlayerPerformanceAsync(It.IsAny<string>()), Times.Once);
+        _playerPerformanceService.Verify(playerPerformanceService => playerPerformanceService.GetPlayerPerformanceAsync(It.IsAny<int>()), Times.Once);
     }
 }

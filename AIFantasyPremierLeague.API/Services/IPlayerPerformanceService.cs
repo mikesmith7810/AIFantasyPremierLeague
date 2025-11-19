@@ -7,5 +7,5 @@ public interface IPlayerPerformanceService
 
     Task<PlayerPerformance> AddPlayerPerformanceAsync(PlayerPerformance playerPerformance);
 
-    Task<PlayerPerformance> GetPlayerPerformanceAsync(string playerPerformanceId);
+    Task<PlayerPerformance> GetPlayerPerformanceAsync(int playerPerformanceId);
 }

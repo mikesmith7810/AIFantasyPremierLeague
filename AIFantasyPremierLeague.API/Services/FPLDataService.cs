@@ -141,6 +141,8 @@ public class FPLDataService(IRepository<PlayerEntity> playerRepository, IReposit
                     GameWeek = playerData.Week,
                     FixtureId = playerData.FixtureId,
                     OpponentTeam = currentGameWeekDetailedData.OpponentTeam,
+                    IsHome = currentGameWeekDetailedData.WasHome ? 1 : 0,
+                    Position = (int)((await playerRepository.GetByIdAsync(playerData.PlayerId))?.Position ?? 0),
                     Stats = new PlayerStats
                     {
                         MinsPlayed = playerData.Minutes,

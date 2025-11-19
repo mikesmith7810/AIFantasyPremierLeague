@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using AIFantasyPremierLeague.API.Converters;
+using AIFantasyPremierLeague.API.Models;
 
 namespace AIFantasyPremierLeague.API.Repository.Data;
 
@@ -10,12 +11,18 @@ public class PlayerEntity
     [Key]
     [JsonPropertyName("id")]
     [JsonConverter(typeof(PlayerIdConverter))]
-    public required string Id { get; set; }
+    public required int Id { get; set; }
+
+    [JsonPropertyName("first_name")]
+    public string FirstName { get; set; } = string.Empty;
+
+    [JsonPropertyName("second_name")]
+    public string SecondName { get; set; } = string.Empty;
 
     [Required]
     [StringLength(100)]
-    [JsonPropertyName("second_name")]
-    public required string Name { get; set; }
+    [JsonIgnore]
+    public string Name => $"{FirstName?.Trim()} {SecondName?.Trim()}".Trim();
 
     [Required]
     [JsonPropertyName("team")]
@@ -24,12 +31,13 @@ public class PlayerEntity
 
     [Required]
     [JsonPropertyName("now_cost")]
-    public required double Value { get; set; }
+    [JsonConverter(typeof(PriceConverter))]
+    public required double Price { get; set; }
 
     [Required]
     [JsonPropertyName("element_type")]
     [JsonConverter(typeof(PositionConverter))]
-    public required string Position { get; set; }
+    public required Position Position { get; set; }
 
     public int PredictedPoints { get; set; }
 }

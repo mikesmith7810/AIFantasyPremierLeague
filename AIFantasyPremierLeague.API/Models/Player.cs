@@ -1,3 +1,3 @@
 namespace AIFantasyPremierLeague.API.Models;
 
-public record Player(string Id, string Name, string TeamId, double Value, String Position, int PredictedPoints);
+public record Player(int Id, string FirstName, string SecondName, string TeamId, double Price, Position Position, int PredictedPoints);

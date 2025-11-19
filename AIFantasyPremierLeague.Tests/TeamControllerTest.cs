@@ -54,10 +54,10 @@ public class TeamControllerTest : DataSupplier
     {
         Team mockTeam = Team1();
 
-        _teamService.Setup(teamService => teamService.GetTeamAsync("team1"))
+        _teamService.Setup(teamService => teamService.GetTeamAsync(1))
                 .ReturnsAsync(mockTeam);
 
-        ActionResult<Team> response = await _teamController.GetTeam("team1");
+        ActionResult<Team> response = await _teamController.GetTeam(1);
 
         var result = response.Result as OkObjectResult;
         var team = result?.Value as Team;
@@ -66,7 +66,7 @@ public class TeamControllerTest : DataSupplier
 
         team.Should().BeEquivalentTo(mockTeam);
 
-        _teamService.Verify(teamService => teamService.GetTeamAsync("team1"), Times.Once);
+        _teamService.Verify(teamService => teamService.GetTeamAsync(1), Times.Once);
     }
 
 

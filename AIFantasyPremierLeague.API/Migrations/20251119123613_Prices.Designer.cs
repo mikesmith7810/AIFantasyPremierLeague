@@ -3,6 +3,7 @@ using AIFantasyPremierLeague.API.Repository.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AIFantasyPremierLeague.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251119123613_Prices")]
+    partial class Prices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,8 +38,9 @@ namespace AIFantasyPremierLeague.API.Migrations
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "first_name");
 
-                    b.Property<int>("Position")
-                        .HasColumnType("int")
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "element_type");
 
                     b.Property<int>("PredictedPoints")
@@ -72,18 +76,12 @@ namespace AIFantasyPremierLeague.API.Migrations
                     b.Property<int>("GameWeek")
                         .HasColumnType("int");
 
-                    b.Property<int>("IsHome")
-                        .HasColumnType("int");
-
                     b.Property<int>("OpponentTeam")
                         .HasColumnType("int");
 
                     b.Property<int>("PlayerId")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "id");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

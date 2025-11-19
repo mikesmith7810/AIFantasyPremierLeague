@@ -53,10 +53,10 @@ public class TeamServiceTest : DataSupplier
     {
         TeamEntity mockTeam = TeamEntity1();
 
-        _teamRepository.Setup(teamRepository => teamRepository.GetByIdAsync("team1"))
+        _teamRepository.Setup(teamRepository => teamRepository.GetByIdAsync(1))
                 .ReturnsAsync(mockTeam);
 
-        Team team = await _teamService.GetTeamAsync("team1");
+        Team team = await _teamService.GetTeamAsync(1);
 
         team.Should().NotBeNull();
         team.Should().BeEquivalentTo(
@@ -66,12 +66,12 @@ public class TeamServiceTest : DataSupplier
     [Fact]
     public async Task GetNonExistingTeam_ThrowsTeamNotFoundException()
     {
-        _teamRepository.Setup(teamRepository => teamRepository.GetByIdAsync("team1"))
+        _teamRepository.Setup(teamRepository => teamRepository.GetByIdAsync(1))
          .ReturnsAsync((TeamEntity)null);
 
-        await _teamService.Invoking(s => s.GetTeamAsync("team1"))
+        await _teamService.Invoking(s => s.GetTeamAsync(1))
                       .Should().ThrowAsync<TeamNotFoundException>()
-                      .WithMessage($"Team with ID 'team1' was not found");
+                      .WithMessage($"Team with ID '1' was not found");
     }
 
     [Fact]

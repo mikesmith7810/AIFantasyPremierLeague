@@ -69,15 +69,15 @@ public class PlayerControllerTest : DataSupplier
     {
         Player player1 = Player1();
 
-        _playerService.Setup(playerService => playerService.GetPlayerAsync("player1"))
+        _playerService.Setup(playerService => playerService.GetPlayerAsync(1))
                 .ReturnsAsync(player1);
 
-        ActionResult<Player> response = await _playerController.GetPlayer("player1");
+        ActionResult<Player> response = await _playerController.GetPlayer(1);
         OkObjectResult? result = response.Result as OkObjectResult;
         var player = result?.Value as Player;
 
         player.Should().BeEquivalentTo(player1);
 
-        _playerService.Verify(playerService => playerService.GetPlayerAsync(It.IsAny<string>()), Times.Once);
+        _playerService.Verify(playerService => playerService.GetPlayerAsync(It.IsAny<int>()), Times.Once);
     }
 }

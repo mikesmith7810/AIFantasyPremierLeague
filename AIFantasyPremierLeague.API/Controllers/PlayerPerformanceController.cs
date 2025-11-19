@@ -23,7 +23,7 @@ public class PlayerPerformanceController(IPlayerPerformanceService playerPerform
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<PlayerPerformance>> GetPlayerPerformance(string id)
+    public async Task<ActionResult<PlayerPerformance>> GetPlayerPerformance(int id)
     {
         var playerPerformance = await playerPerformanceService.GetPlayerPerformanceAsync(id);
 

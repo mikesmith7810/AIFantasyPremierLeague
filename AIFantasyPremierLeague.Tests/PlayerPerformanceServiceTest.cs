@@ -51,10 +51,10 @@ public class PlayerPerformanceServiceTest : DataSupplier
     {
         PlayerPerformanceEntity mockPlayerPerformance = PlayerPerformanceEntity1();
 
-        _playerPerformanceRepository.Setup(playerPerformanceRepository => playerPerformanceRepository.GetByIdAsync("playerPerformance1"))
+        _playerPerformanceRepository.Setup(playerPerformanceRepository => playerPerformanceRepository.GetByIdAsync(1))
                 .ReturnsAsync(mockPlayerPerformance);
 
-        PlayerPerformance playerPerformance = await _playerPerformanceService.GetPlayerPerformanceAsync("playerPerformance1");
+        PlayerPerformance playerPerformance = await _playerPerformanceService.GetPlayerPerformanceAsync(1);
 
         playerPerformance.Should().NotBeNull();
         playerPerformance.Should().BeEquivalentTo(
@@ -80,11 +80,11 @@ public class PlayerPerformanceServiceTest : DataSupplier
     [Fact]
     public async Task GetNonExistingPlayerPerformance_ThrowsPlayerPerformanceNotFoundException()
     {
-        _playerPerformanceRepository.Setup(playerPerformanceRepository => playerPerformanceRepository.GetByIdAsync("playerPerformance1"))
+        _playerPerformanceRepository.Setup(playerPerformanceRepository => playerPerformanceRepository.GetByIdAsync(1))
                 .ReturnsAsync((PlayerPerformanceEntity)null);
 
-        await _playerPerformanceService.Invoking(s => s.GetPlayerPerformanceAsync("playerPerformance1"))
+        await _playerPerformanceService.Invoking(s => s.GetPlayerPerformanceAsync(1))
                       .Should().ThrowAsync<PlayerPerformanceNotFoundException>()
-                      .WithMessage($"Player Performance with ID 'playerPerformance1' was not found");
+                      .WithMessage($"Player Performance with ID '1' was not found");
     }
 }

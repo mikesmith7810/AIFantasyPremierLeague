@@ -31,6 +31,10 @@ public class PlayerTrainingData
 
     public float OppositionAveragePointsConcededLast5Games { get; set; }
 
+    public float IsHome { get; set; }
+
+    public float Position { get; set; }
+
     [ColumnName("Label")]
     public float Points { get; set; }
 }

@@ -7,5 +7,5 @@ public interface IPlayerService
 
     Task<Player> AddPlayerAsync(Player player);
 
-    Task<Player> GetPlayerAsync(string playerId);
+    Task<Player> GetPlayerAsync(int playerId);
 }

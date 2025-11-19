@@ -24,9 +24,9 @@ public class TeamService(IRepository<TeamEntity> teamRepository) : ITeamService
 
     }
 
-    public async Task<Team> GetTeamAsync(string teamId)
+    public async Task<Team> GetTeamAsync(int teamId)
     {
-        TeamEntity? teamEntity = await teamRepository.GetByIdAsync(teamId) ?? throw new TeamNotFoundException(teamId);
+        TeamEntity? teamEntity = await teamRepository.GetByIdAsync(teamId) ?? throw new TeamNotFoundException(teamId.ToString());
 
         return new Team(teamEntity.Id, teamEntity.Name, teamEntity.ShortName);
     }

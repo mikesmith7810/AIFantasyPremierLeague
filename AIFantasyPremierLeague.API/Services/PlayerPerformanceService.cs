@@ -18,9 +18,9 @@ public class PlayerPerformanceService(IRepository<PlayerPerformanceEntity> playe
 
     }
 
-    public async Task<PlayerPerformance> GetPlayerPerformanceAsync(string playerPerformanceId)
+    public async Task<PlayerPerformance> GetPlayerPerformanceAsync(int playerPerformanceId)
     {
-        PlayerPerformanceEntity? playerPerformanceEntity = await playerPerformanceRepository.GetByIdAsync(playerPerformanceId) ?? throw new PlayerPerformanceNotFoundException(playerPerformanceId);
+        PlayerPerformanceEntity? playerPerformanceEntity = await playerPerformanceRepository.GetByIdAsync(playerPerformanceId) ?? throw new PlayerPerformanceNotFoundException(playerPerformanceId.ToString());
 
         return new PlayerPerformance(playerPerformanceEntity.Id, playerPerformanceEntity.PlayerId, playerPerformanceEntity.Stats.Points, playerPerformanceEntity.Stats.Goals, playerPerformanceEntity.Stats.Assists, playerPerformanceEntity.Stats.MinsPlayed);
     }

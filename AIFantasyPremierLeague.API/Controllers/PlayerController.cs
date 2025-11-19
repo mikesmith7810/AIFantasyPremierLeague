@@ -23,7 +23,7 @@ public class PlayerController(IPlayerService playerService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Player>> GetPlayer(string id)
+    public async Task<ActionResult<Player>> GetPlayer(int id)
     {
         var player = await playerService.GetPlayerAsync(id);
 
