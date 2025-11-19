@@ -7,7 +7,7 @@ namespace AIFantasyPremierLeague.API.Prediction;
 public class PlayerTrainingData
 {
 
-    public required string PlayerId { get; set; }
+    public required int PlayerId { get; set; }
 
     public float AverageGoalsLast5Games { get; set; }
 

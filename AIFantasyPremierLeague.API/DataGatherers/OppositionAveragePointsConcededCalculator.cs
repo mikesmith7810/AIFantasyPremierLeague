@@ -15,4 +15,14 @@ public class OppositionAveragePointsConcededCalculator(ITeamHistoryRepository te
 
         return teamHistoryEntities.Average(th => th.PointsConceded);
     }
+
+    public async Task<double> CalculateForGameWeek(int TeamId, int NumberOfWeeks, int GameWeek)
+    {
+        IEnumerable<TeamHistoryEntity> teamHistoryEntities = await teamHistoryRepository.GetLastNWeeksForTeamHistoryByGameWeekAsync(TeamId, NumberOfWeeks, GameWeek);
+
+        if (!teamHistoryEntities.Any())
+            return 0f;
+
+        return teamHistoryEntities.Average(th => th.PointsConceded);
+    }
 }

@@ -16,4 +16,13 @@ public class TeamHistoryRepository(AppDbContext context) : Repository<TeamHistor
            .Take(NumberOfWeeks)
            .ToListAsync();
     }
+
+    public async Task<IEnumerable<TeamHistoryEntity>> GetLastNWeeksForTeamHistoryByGameWeekAsync(int TeamId, int NumberOfWeeks, int GameWeek)
+    {
+        return await _dbSet
+           .Where(th => th.TeamId == TeamId && th.Week < GameWeek)
+           .OrderByDescending(th => th.Week)
+           .Take(NumberOfWeeks)
+           .ToListAsync();
+    }
 }

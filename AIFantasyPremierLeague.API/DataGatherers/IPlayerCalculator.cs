@@ -4,5 +4,6 @@ namespace AIFantasyPremierLeague.API.DataGatherers;
 
 public interface IPlayerCalculator
 {
-    Task<double> Calculate(string PlayerId, int NumberOfWeeks);
+    Task<double> Calculate(int PlayerId, int NumberOfWeeks);
+    Task<double> CalculateForGameWeek(int PlayerId, int NumberOfWeeks, int GameWeek);
 }

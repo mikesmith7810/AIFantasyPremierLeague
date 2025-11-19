@@ -5,10 +5,19 @@ namespace AIFantasyPremierLeague.API.DataGatherers;
 
 public class AverageGoalsConcededCalculator(IPlayerPerformanceRepository playerPerformanceRepository) : IPlayerCalculator
 {
-    public async Task<double> Calculate(string PlayerId, int NumberOfWeeks)
+    public async Task<double> Calculate(int PlayerId, int NumberOfWeeks)
     {
         IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities = await playerPerformanceRepository.GetLastNWeeksForPlayerAsync(PlayerId, NumberOfWeeks);
 
+        if (!playerPerformanceEntities.Any())
+            return 0f;
+
+        return playerPerformanceEntities.Average(p => p.Stats.GoalsConceded);
+    }
+
+    public async Task<double> CalculateForGameWeek(int PlayerId, int NumberOfWeeks, int GameWeek)
+    {
+        IEnumerable<PlayerPerformanceEntity> playerPerformanceEntities = await playerPerformanceRepository.GetLastNWeeksForPlayerByGameWeekAsync(PlayerId, NumberOfWeeks, GameWeek);
         if (!playerPerformanceEntities.Any())
             return 0f;
 

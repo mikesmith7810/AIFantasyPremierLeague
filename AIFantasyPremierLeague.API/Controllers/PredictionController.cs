@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AIFantasyPremierLeague.API.Controllers;
@@ -9,11 +10,25 @@ namespace AIFantasyPremierLeague.API.Controllers;
 [Route("prediction")]
 public class PredictionController(IPredictionService predictionService) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("all")]
     [Produces(MediaTypeNames.Application.Json)]
-    public ActionResult<PlayerPrediction> GetPredictions()
+    public ActionResult<PlayerPrediction> GetPredictionsForAll()
     {
         var playerPrediction = predictionService.GetPredictionHighestPoints();
+
+        if (playerPrediction == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(playerPrediction);
+    }
+
+    [HttpGet("{playerId}/{gameWeek}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<ActionResult<PlayerPrediction>> GetPredictionForPlayer(int PlayerId, int GameWeek)
+    {
+        var playerPrediction = await predictionService.GetPredictionForPlayer(PlayerId, GameWeek);
 
         if (playerPrediction == null)
         {

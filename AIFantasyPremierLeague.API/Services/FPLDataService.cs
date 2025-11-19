@@ -137,7 +137,7 @@ public class FPLDataService(IRepository<PlayerEntity> playerRepository, IReposit
             {
                 var playerPerformanceEntity = new PlayerPerformanceEntity
                 {
-                    PlayerId = $"player{playerData.PlayerId}",
+                    PlayerId = playerData.PlayerId,
                     GameWeek = playerData.Week,
                     FixtureId = playerData.FixtureId,
                     OpponentTeam = currentGameWeekDetailedData.OpponentTeam,

@@ -3,34 +3,33 @@ using System.Text.Json.Serialization;
 
 namespace AIFantasyPremierLeague.API.Converters;
 
-public class PlayerIdConverter : JsonConverter<string>
+public class PlayerIdConverter : JsonConverter<int>
 {
-    public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Number)
         {
-            var id = reader.GetInt32();
-            return $"player{id}";
+            return reader.GetInt32();
         }
 
         if (reader.TokenType == JsonTokenType.String)
         {
             var stringValue = reader.GetString();
-            return stringValue?.StartsWith("player") == true ? stringValue : $"player{stringValue}";
+            if (stringValue?.StartsWith("player") == true && int.TryParse(stringValue.Substring(6), out int id))
+            {
+                return id;
+            }
+            if (int.TryParse(stringValue, out int numericId))
+            {
+                return numericId;
+            }
         }
 
-        throw new JsonException("Unable to convert to player ID");
+        throw new JsonException("Unable to convert to player ID integer");
     }
 
-    public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
     {
-        if (value.StartsWith("player") && int.TryParse(value.Substring(6), out int numericId))
-        {
-            writer.WriteNumberValue(numericId);
-        }
-        else
-        {
-            writer.WriteStringValue(value);
-        }
+        writer.WriteNumberValue(value);
     }
 }

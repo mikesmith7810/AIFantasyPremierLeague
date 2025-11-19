@@ -14,7 +14,7 @@ public class PlayerPerformanceEntity
     [Required]
     [JsonPropertyName("id")]
     [JsonConverter(typeof(PlayerIdConverter))]
-    public required string PlayerId { get; set; }
+    public required int PlayerId { get; set; }
 
     public int GameWeek { get; set; }
 

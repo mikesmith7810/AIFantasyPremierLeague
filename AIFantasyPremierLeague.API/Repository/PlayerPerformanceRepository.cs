@@ -8,17 +8,26 @@ public class PlayerPerformanceRepository(AppDbContext context) : Repository<Play
 {
     private readonly DbSet<PlayerPerformanceEntity> _dbSet = context.Set<PlayerPerformanceEntity>();
 
-    public async Task<IEnumerable<PlayerPerformanceEntity>> GetByPlayerIdAsync(string playerId)
+    public async Task<IEnumerable<PlayerPerformanceEntity>> GetByPlayerIdAsync(int PlayerId)
     {
-        return await _dbSet.Where(p => p.PlayerId == playerId).ToListAsync();
+        return await _dbSet.Where(p => p.PlayerId == PlayerId).ToListAsync();
     }
 
-    public async Task<IEnumerable<PlayerPerformanceEntity>> GetLastNWeeksForPlayerAsync(string playerId, int numberOfWeeks)
+    public async Task<IEnumerable<PlayerPerformanceEntity>> GetLastNWeeksForPlayerAsync(int PlayerId, int NumberOfWeeks)
     {
         return await _dbSet
-            .Where(p => p.PlayerId == playerId)
+            .Where(p => p.PlayerId == PlayerId)
             .OrderByDescending(p => p.GameWeek)
-            .Take(numberOfWeeks)
+            .Take(NumberOfWeeks)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<PlayerPerformanceEntity>> GetLastNWeeksForPlayerByGameWeekAsync(int PlayerId, int NumberOfWeeks, int GameWeek)
+    {
+        return await _dbSet
+            .Where(p => p.PlayerId == PlayerId && p.GameWeek < GameWeek)
+            .OrderByDescending(p => p.GameWeek)
+            .Take(NumberOfWeeks)
             .ToListAsync();
     }
 

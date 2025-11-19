@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AIFantasyPremierLeague.API.DataGatherers;
 using AIFantasyPremierLeague.API.Prediction;
 using AIFantasyPremierLeague.API.Repository;
@@ -61,12 +62,46 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
 
     public PlayerPrediction GetPredictionHighestPoints()
     {
+
         var futureInput = new PlayerTrainingData
         {
-            PlayerId = "player414",
+            PlayerId = 414,
             AverageGoalsLast5Games = 3,
+            AverageAssistsLast5Games = 0,
             AveragePointsLast5Games = 6,
             AverageMinsPlayedLast5Games = 79,
+            AverageBonusLast5Games = 0,
+            AverageCleanSheetsLast5Games = 0,
+            AverageGoalsConcededLast5Games = 0,
+            AverageYellowCardsLast5Games = 0,
+            AverageRedCardsLast5Games = 0,
+            AverageSavesLast5Games = 0,
+            OppositionAveragePointsConcededLast5Games = 0,
+            Points = 0f
+        };
+
+        PlayerPrediction playerPrediction = predictionEnginePool.Predict(futureInput);
+        return playerPrediction;
+    }
+
+    public async Task<PlayerPrediction> GetPredictionForPlayer(int PlayerId, int GameWeek)
+    {
+
+
+        var futureInput = new PlayerTrainingData
+        {
+            PlayerId = PlayerId,
+            AverageGoalsLast5Games = (float)await averageGoalsCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageAssistsLast5Games = (float)await averageAssistsCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AveragePointsLast5Games = (float)await averagePointsCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageMinsPlayedLast5Games = (float)await averageMinsPlayedCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageBonusLast5Games = (float)await averageBonusCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageCleanSheetsLast5Games = (float)await averageCleanSheetsCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageGoalsConcededLast5Games = (float)await averageGoalsConcededCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageYellowCardsLast5Games = (float)await averageYellowCardsCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageRedCardsLast5Games = (float)await averageRedCardsCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            AverageSavesLast5Games = (float)await averageSavesCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
+            OppositionAveragePointsConcededLast5Games = (float)await oppositionAveragePointsConcededCalculator.CalculateForGameWeek(PlayerId, 5, GameWeek),
             Points = 0f
         };
 
@@ -116,6 +151,5 @@ public class PredictionService(IRepository<PlayerPerformanceEntity> playerPerfor
         logger.LogInformation("Completed training data mapping for {TotalCount} entities", totalCount);
         return trainingDataList;
     }
-
 }
 
