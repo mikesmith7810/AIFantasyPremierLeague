@@ -3,6 +3,7 @@ using AIFantasyPremierLeague.API.Repository.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AIFantasyPremierLeague.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251120120457_Fixtures2")]
+    partial class Fixtures2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,8 +54,9 @@ namespace AIFantasyPremierLeague.API.Migrations
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "second_name");
 
-                    b.Property<int>("Team")
-                        .HasColumnType("int")
+                    b.Property<string>("Team")
+                        .IsRequired()
+                        .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "team");
 
                     b.HasKey("Id");
@@ -124,11 +128,11 @@ namespace AIFantasyPremierLeague.API.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("TeamAway")
+                    b.Property<int>("OpponentTeam")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "team_a");
 
-                    b.Property<int>("TeamHome")
+                    b.Property<int>("TeamId")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "team_h");
 

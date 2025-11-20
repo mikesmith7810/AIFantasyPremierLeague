@@ -26,8 +26,7 @@ public class PlayerEntity
 
     [Required]
     [JsonPropertyName("team")]
-    [JsonConverter(typeof(TeamIdConverter))]
-    public required string Team { get; set; }
+    public required int Team { get; set; }
 
     [Required]
     [JsonPropertyName("now_cost")]

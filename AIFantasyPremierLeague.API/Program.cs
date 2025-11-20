@@ -32,6 +32,7 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddScoped<IPlayerPerformanceRepository, PlayerPerformanceRepository>();
 builder.Services.AddScoped<ITeamHistoryRepository, TeamHistoryRepository>();
+builder.Services.AddScoped<ITeamFixtureRepository, TeamFixtureRepository>();
 builder.Services.AddScoped<AverageGoalsCalculator>();
 builder.Services.AddScoped<AverageAssistsCalculator>();
 builder.Services.AddScoped<AveragePointsCalculator>();

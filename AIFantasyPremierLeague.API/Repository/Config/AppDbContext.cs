@@ -8,6 +8,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<TeamHistoryEntity> TeamHistorys { get; set; }
 
+    public DbSet<TeamFixtureEntity> TeamFixtures { get; set; }
+
     public DbSet<PlayerEntity> Players { get; set; }
 
     public DbSet<PlayerPerformanceEntity> PlayerHistory { get; set; }

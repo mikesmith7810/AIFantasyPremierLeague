@@ -5,9 +5,11 @@ using System.Text.Json;
 
 namespace AIFantasyPremierLeague.API.Services;
 
-public class FPLDataService(IRepository<PlayerEntity> playerRepository, IRepository<TeamEntity> teamRepository, IRepository<TeamHistoryEntity> teamHistoryRepository, IPlayerPerformanceRepository playerPerformanceRepository, IHttpClientFactory httpClientFactory, ILogger<FPLDataService> logger) : IFPLDataService
+public class FPLDataService(IRepository<PlayerEntity> playerRepository, IRepository<TeamEntity> teamRepository, IRepository<TeamHistoryEntity> teamHistoryRepository, IRepository<TeamFixtureEntity> teamFixtureRepository, IPlayerPerformanceRepository playerPerformanceRepository, IHttpClientFactory httpClientFactory, ILogger<FPLDataService> logger) : IFPLDataService
 {
     private const string FPL_DATA_ENDPOINT = "/api/bootstrap-static/";
+
+    private const string FPL_FIXTURES_ENDPOINT = "/api/fixtures";
     private const string FPL_API = "FPLApi";
     private const string FPL_EVENTS_ENDPOINT = "/api/event/";
     private const string FPL_DETAILED_PLAYER_ENDPOINT = "/api/element-summary/";
@@ -65,7 +67,7 @@ public class FPLDataService(IRepository<PlayerEntity> playerRepository, IReposit
         }
     }
 
-    public async Task LoadTeamFixtureHistoryData(int gameWeek)
+    public async Task LoadTeamHistoryData(int gameWeek)
     {
         IEnumerable<TeamEntity> teams = await teamRepository.GetAllAsync();
 
@@ -74,12 +76,38 @@ public class FPLDataService(IRepository<PlayerEntity> playerRepository, IReposit
             var teamTotalPointsConceded = await playerPerformanceRepository.GetTeamTotalPointsConcededForGameWeek(team.Id, gameWeek);
             var teamHistoryEntity = new TeamHistoryEntity
             {
-                Id = $"teamHistory_{Guid.NewGuid().ToString("N")[..8]}",
+                Id = team.Id.ToString().PadLeft(2, '0') + gameWeek.ToString().PadLeft(2, '0'),
                 TeamId = team.Id,
                 Week = gameWeek,
                 PointsConceded = teamTotalPointsConceded
             };
             await teamHistoryRepository.AddAsync(teamHistoryEntity);
+        }
+    }
+
+    public async Task LoadTeamFixtureData(int gameWeek)
+    {
+        var response = await httpClientFactory.CreateClient(FPL_API).GetAsync(FPL_FIXTURES_ENDPOINT + "?event=" + gameWeek);
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            AllowTrailingCommas = true
+        };
+
+        List<TeamFixtureEntity>? fplTeamFixtureData = JsonSerializer.Deserialize<List<TeamFixtureEntity>>(jsonString, options);
+
+        if (fplTeamFixtureData == null)
+        {
+            logger.LogWarning("No team fixture elements found in FPL API response");
+            return;
+        }
+
+        foreach (var teamFixture in fplTeamFixtureData)
+        {
+            await teamFixtureRepository.AddAsync(teamFixture);
         }
     }
 

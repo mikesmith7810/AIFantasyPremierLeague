@@ -6,21 +6,13 @@ namespace AIFantasyPremierLeague.API.Controllers;
 
 [ApiController]
 [Route("fpldata")]
-public class FPLDataController : ControllerBase
+public class FPLDataController(IFPLDataService fplDataService) : ControllerBase
 {
-
-    private readonly IFPLDataService _fplDataService;
-
-    public FPLDataController(IFPLDataService fplDataService)
-    {
-        _fplDataService = fplDataService;
-    }
-
     [HttpPost("playersKnownData")]
     public async Task<ActionResult<Player>> LoadPlayersKnownData()
     {
 
-        await _fplDataService.LoadPlayersKnownDataAsync();
+        await fplDataService.LoadPlayersKnownDataAsync();
         return Created();
     }
 
@@ -28,21 +20,28 @@ public class FPLDataController : ControllerBase
     public async Task<ActionResult<Team>> LoadTeamsKnownData()
     {
 
-        await _fplDataService.LoadTeamsKnownDataAsync();
+        await fplDataService.LoadTeamsKnownDataAsync();
         return Created();
     }
 
     [HttpPost("playersPerformanceData/{gameWeek}")]
     public async Task<ActionResult<Player>> LoadPlayersPerformanceData(int gameWeek)
     {
-        await _fplDataService.LoadPlayersPerformanceDataAsync(gameWeek);
+        await fplDataService.LoadPlayersPerformanceDataAsync(gameWeek);
         return Created();
     }
 
     [HttpPost("teamPerformanceData/{gameWeek}")]
     public async Task<ActionResult<Player>> LoadTeamFixtureHistoryData(int gameWeek)
     {
-        await _fplDataService.LoadTeamFixtureHistoryData(gameWeek);
+        await fplDataService.LoadTeamHistoryData(gameWeek);
+        return Created();
+    }
+
+    [HttpPost("teamFixtureData/{gameWeek}")]
+    public async Task<ActionResult<Player>> LoadTeamFixtureData(int gameWeek)
+    {
+        await fplDataService.LoadTeamFixtureData(gameWeek);
         return Created();
     }
 }
