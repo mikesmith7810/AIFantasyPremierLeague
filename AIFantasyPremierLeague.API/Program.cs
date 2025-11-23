@@ -30,6 +30,18 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<NotFoundFilter>();
 });
 
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", builder =>
+    {
+        builder
+            .AllowAnyOrigin()  // In production, replace with specific origins like .WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddScoped<IPlayerPerformanceRepository, PlayerPerformanceRepository>();
 builder.Services.AddScoped<ITeamHistoryRepository, TeamHistoryRepository>();
 builder.Services.AddScoped<ITeamFixtureRepository, TeamFixtureRepository>();
@@ -78,6 +90,10 @@ else
 {
     app.UseHttpsRedirection();
 }
+
+// Enable CORS
+app.UseCors("AllowFrontend");
+
 app.MapControllers();
 
 app.Run();

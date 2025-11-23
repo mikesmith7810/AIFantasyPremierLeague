@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPL Predictor Dashboard</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 16px 24px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #f3f4f6;
+            color: #4f46e5;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #4f46e5;
+        }
+        
+        .btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 8px 8px 8px 0;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background: #10b981;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-weight: 500;
+        }
+        
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .status-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        .status-loading {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        .predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .prediction-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .predicted-points {
+            background: #4f46e5;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .player-details {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .data-loading-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .player-search {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .player-comparison-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .player-comparison-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+        }
+        
+        .remove-player-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .player-header {
+            text-align: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .player-full-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .player-position-price {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .prediction-highlight {
+            background: #4f46e5;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 16px;
+            font-weight: 600;
+        }
+        
+        .player-search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+        
+        .search-result-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s ease;
+        }
+        
+        .search-result-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .comparison-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .comparison-summary {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        
+        .comparison-summary h3 {
+            color: #0369a1;
+            margin-bottom: 12px;
+        }
+        
+        .best-in-category {
+            color: #059669;
+            font-weight: 600;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // API configuration
+        const API_BASE = 'http://localhost:5110';
+
+        // API service with CORS handling
+        const apiService = {
+            // Helper method for fetch with CORS handling
+            fetchWithCors: async (url, options = {}) => {
+                const defaultOptions = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    mode: 'cors',
+                    ...options
+                };
+                
+                console.log('Fetching:', url, 'with options:', defaultOptions);
+                return fetch(url, defaultOptions);
+            },
+
+            // Data loading endpoints
+            loadPlayersKnownData: () => apiService.fetchWithCors(`${API_BASE}/fpldata/playersKnownData`, { method: 'POST' }),
+            loadTeamsKnownData: () => apiService.fetchWithCors(`${API_BASE}/fpldata/teamsKnownData`, { method: 'POST' }),
+            loadTeamFixtureData: (gameWeek) => apiService.fetchWithCors(`${API_BASE}/fpldata/teamFixtureData/${gameWeek}`, { method: 'POST' }),
+            loadPlayersPerformanceData: (gameWeek) => apiService.fetchWithCors(`${API_BASE}/fpldata/playersPerformanceData/${gameWeek}`, { method: 'POST' }),
+            loadTeamPerformanceData: (gameWeek) => apiService.fetchWithCors(`${API_BASE}/fpldata/teamPerformanceData/${gameWeek}`, { method: 'POST' }),
+            
+            // Model training
+            trainModel: () => apiService.fetchWithCors(`${API_BASE}/prediction/train`, { method: 'POST' }),
+            
+            // Data retrieval
+            getPlayers: () => apiService.fetchWithCors(`${API_BASE}/player`).then(res => res.json()),
+            getTeams: () => apiService.fetchWithCors(`${API_BASE}/team`).then(res => res.json()),
+            getPlayer: (id) => apiService.fetchWithCors(`${API_BASE}/player/${id}`).then(res => res.json()),
+            
+            // Predictions
+            getPredictionForPlayer: (playerId, gameWeek) => 
+                apiService.fetchWithCors(`${API_BASE}/prediction/${playerId}/${gameWeek}`).then(res => res.json()),
+            getPredictionsForPosition: (gameWeek, position) => 
+                apiService.fetchWithCors(`${API_BASE}/prediction/all/${gameWeek}/${position}`).then(res => res.json()),
+        };
+
+        // Player Search Component
+        function PlayerSearchComponent({ onPlayerSelect, excludeIds = [] }) {
+            const [searchTerm, setSearchTerm] = useState('');
+            const [searchResults, setSearchResults] = useState([]);
+            const [showResults, setShowResults] = useState(false);
+            const [allPlayers, setAllPlayers] = useState([]);
+            const searchRef = useRef(null);
+
+            useEffect(() => {
+                const loadPlayers = async () => {
+                    try {
+                        const players = await apiService.getPlayers();
+                        setAllPlayers(players);
+                    } catch (error) {
+                        console.error('Failed to load players:', error);
+                    }
+                };
+                loadPlayers();
+            }, []);
+
+            useEffect(() => {
+                if (searchTerm.length > 1) {
+                    const filteredPlayers = allPlayers
+                        .filter(player => 
+                            !excludeIds.includes(player.id) &&
+                            (`${player.firstName} ${player.secondName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             player.id.toString().includes(searchTerm))
+                        )
+                        .slice(0, 10);
+                    setSearchResults(filteredPlayers);
+                    setShowResults(true);
+                } else {
+                    setSearchResults([]);
+                    setShowResults(false);
+                }
+            }, [searchTerm, allPlayers, excludeIds]);
+
+            const handlePlayerSelect = (player) => {
+                onPlayerSelect(player);
+                setSearchTerm('');
+                setShowResults(false);
+            };
+
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (searchRef.current && !searchRef.current.contains(event.target)) {
+                        setShowResults(false);
+                    }
+                };
+
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => {
+                    document.removeEventListener('mousedown', handleClickOutside);
+                };
+            }, []);
+
+            return (
+                <div className="search-container" ref={searchRef}>
+                    <input
+                        type="text"
+                        placeholder="Search players by name or ID..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onFocus={() => searchTerm.length > 1 && setShowResults(true)}
+                        className="search-input"
+                        style={{
+                            width: '100%',
+                            padding: '12px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '6px',
+                            fontSize: '1rem'
+                        }}
+                    />
+                    {showResults && searchResults.length > 0 && (
+                        <div className="player-search-results">
+                            {searchResults.map((player) => (
+                                <div
+                                    key={player.id}
+                                    className="search-result-item"
+                                    onClick={() => handlePlayerSelect(player)}
+                                >
+                                    <div style={{ fontWeight: '500' }}>
+                                        {player.firstName} {player.secondName}
+                                    </div>
+                                    <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                                        {player.position} • £{player.price}m • ID: {player.id}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Player Comparison Component
+        function PlayerComparisonSection() {
+            const [comparedPlayers, setComparedPlayers] = useState([]);
+            const [gameWeek, setGameWeek] = useState(16);
+            const [predictions, setPredictions] = useState({});
+            const [loading, setLoading] = useState(false);
+
+            const addPlayerToComparison = (player) => {
+                if (comparedPlayers.length < 4 && !comparedPlayers.find(p => p.id === player.id)) {
+                    setComparedPlayers([...comparedPlayers, player]);
+                }
+            };
+
+            const removePlayerFromComparison = (playerId) => {
+                setComparedPlayers(comparedPlayers.filter(p => p.id !== playerId));
+                setPredictions(prev => {
+                    const newPredictions = { ...prev };
+                    delete newPredictions[playerId];
+                    return newPredictions;
+                });
+            };
+
+            const loadPredictions = async () => {
+                if (comparedPlayers.length === 0) return;
+                
+                setLoading(true);
+                const newPredictions = {};
+                
+                for (const player of comparedPlayers) {
+                    try {
+                        const prediction = await apiService.getPredictionForPlayer(player.id, gameWeek);
+                        newPredictions[player.id] = prediction;
+                    } catch (error) {
+                        console.error(`Failed to get prediction for player ${player.id}:`, error);
+                        newPredictions[player.id] = null;
+                    }
+                }
+                
+                setPredictions(newPredictions);
+                setLoading(false);
+            };
+
+            useEffect(() => {
+                if (comparedPlayers.length > 0) {
+                    loadPredictions();
+                }
+            }, [comparedPlayers, gameWeek]);
+
+            const getPositionName = (position) => {
+                const positionMap = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'ATT' };
+                return positionMap[position] || position;
+            };
+
+            const getBestPerformers = () => {
+                if (comparedPlayers.length < 2) return {};
+                
+                const metrics = {
+                    cheapest: comparedPlayers.reduce((min, p) => p.price < min.price ? p : min),
+                    mostExpensive: comparedPlayers.reduce((max, p) => p.price > max.price ? p : max),
+                    highestPredicted: Object.entries(predictions).reduce((best, [id, pred]) => {
+                        if (!pred) return best;
+                        if (!best.prediction || pred.predictedPoints > best.prediction.predictedPoints) {
+                            return { playerId: parseInt(id), prediction: pred };
+                        }
+                        return best;
+                    }, {}),
+                };
+
+                return metrics;
+            };
+
+            const bestPerformers = getBestPerformers();
+
+            return (
+                <div className="comparison-container">
+                    <h2 className="card-title">Player Comparison Tool</h2>
+                    
+                    <div className="player-search">
+                        <div style={{ flex: 1 }}>
+                            <PlayerSearchComponent 
+                                onPlayerSelect={addPlayerToComparison}
+                                excludeIds={comparedPlayers.map(p => p.id)}
+                            />
+                        </div>
+                        <div className="input-group" style={{ minWidth: '120px', marginBottom: 0 }}>
+                            <label htmlFor="comparisonGameWeek" style={{ marginBottom: '4px', fontSize: '0.9rem' }}>Game Week:</label>
+                            <input
+                                type="number"
+                                id="comparisonGameWeek"
+                                value={gameWeek}
+                                onChange={(e) => setGameWeek(parseInt(e.target.value))}
+                                min="1"
+                                max="38"
+                                style={{ padding: '8px' }}
+                            />
+                        </div>
+                        {comparedPlayers.length > 0 && (
+                            <button 
+                                className="btn btn-danger"
+                                onClick={() => {
+                                    setComparedPlayers([]);
+                                    setPredictions({});
+                                }}
+                            >
+                                Clear All
+                            </button>
+                        )}
+                    </div>
+
+                    {comparedPlayers.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                            <h3 style={{ marginBottom: '8px' }}>No players selected for comparison</h3>
+                            <p>Search and select up to 4 players to compare their stats and predictions</p>
+                        </div>
+                    )}
+
+                    {comparedPlayers.length > 0 && (
+                        <>
+                            <div className="comparison-grid">
+                                {comparedPlayers.map((player) => {
+                                    const prediction = predictions[player.id];
+                                    return (
+                                        <div key={player.id} className="player-comparison-card">
+                                            <button
+                                                className="remove-player-btn"
+                                                onClick={() => removePlayerFromComparison(player.id)}
+                                            >
+                                                ✕
+                                            </button>
+
+                                            <div className="player-header">
+                                                <div className="player-full-name">
+                                                    {player.firstName} {player.secondName}
+                                                </div>
+                                                <div className="player-position-price">
+                                                    {getPositionName(player.position)} • £{player.price}m • ID: {player.id}
+                                                </div>
+                                            </div>
+
+                                            <div className="player-stats">
+                                                <div className="stat-item">
+                                                    <span className="stat-label">Position</span>
+                                                    <span className="stat-value">{getPositionName(player.position)}</span>
+                                                </div>
+                                                <div className="stat-item">
+                                                    <span className="stat-label">Current Price</span>
+                                                    <span className="stat-value">£{player.price}m</span>
+                                                </div>
+                                                <div className="stat-item">
+                                                    <span className="stat-label">Team</span>
+                                                    <span className="stat-value">{player.teamId}</span>
+                                                </div>
+                                                <div className="stat-item">
+                                                    <span className="stat-label">Current Points</span>
+                                                    <span className="stat-value">{player.predictedPoints || 'N/A'}</span>
+                                                </div>
+                                            </div>
+
+                                            {loading && (
+                                                <div className="prediction-highlight" style={{ background: '#6b7280' }}>
+                                                    <span className="loading-spinner" style={{ width: '16px', height: '16px' }}></span>
+                                                    Loading prediction...
+                                                </div>
+                                            )}
+
+                                            {!loading && prediction && (
+                                                <div className="prediction-highlight">
+                                                    GW{gameWeek} Prediction: {prediction.predictedPoints?.toFixed(1)} points
+                                                </div>
+                                            )}
+
+                                            {!loading && prediction === null && (
+                                                <div className="prediction-highlight" style={{ background: '#ef4444' }}>
+                                                    Prediction unavailable
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {comparedPlayers.length > 1 && !loading && (
+                                <div className="comparison-summary">
+                                    <h3>Comparison Summary</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                                        <div>
+                                            <strong>Best Value:</strong><br />
+                                            <span className="best-in-category">
+                                                {bestPerformers.cheapest?.firstName} {bestPerformers.cheapest?.secondName} 
+                                                (£{bestPerformers.cheapest?.price}m)
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <strong>Premium Option:</strong><br />
+                                            <span>
+                                                {bestPerformers.mostExpensive?.firstName} {bestPerformers.mostExpensive?.secondName} 
+                                                (£{bestPerformers.mostExpensive?.price}m)
+                                            </span>
+                                        </div>
+                                        {bestPerformers.highestPredicted?.prediction && (
+                                            <div>
+                                                <strong>Highest Predicted (GW{gameWeek}):</strong><br />
+                                                <span className="best-in-category">
+                                                    {comparedPlayers.find(p => p.id === bestPerformers.highestPredicted.playerId)?.firstName}{' '}
+                                                    {comparedPlayers.find(p => p.id === bestPerformers.highestPredicted.playerId)?.secondName}
+                                                    ({bestPerformers.highestPredicted.prediction.predictedPoints?.toFixed(1)} pts)
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        // Data Loading Component
+        function DataLoadingSection() {
+            const [loadingSteps, setLoadingSteps] = useState({});
+            const [gameWeek, setGameWeek] = useState(12); // Changed default from 15 to current week
+
+            const loadingSequence = [
+                { key: 'players', label: 'Players (One-time)', action: () => apiService.loadPlayersKnownData(), isOneTime: true },
+                { key: 'teams', label: 'Teams (One-time)', action: () => apiService.loadTeamsKnownData(), isOneTime: true },
+                { key: 'fixtures', label: 'Team Fixtures', action: () => apiService.loadTeamFixtureData(gameWeek), isOneTime: false },
+                { key: 'performance', label: 'Player Performance', action: () => apiService.loadPlayersPerformanceData(gameWeek), isOneTime: false },
+                { key: 'teamPerf', label: 'Team Performance', action: () => apiService.loadTeamPerformanceData(gameWeek), isOneTime: false },
+            ];
+
+            const handleSingleLoad = async (step) => {
+                setLoadingSteps(prev => ({ ...prev, [step.key]: 'loading' }));
+                try {
+                    const response = await step.action();
+                    if (response.ok) {
+                        setLoadingSteps(prev => ({ ...prev, [step.key]: 'success' }));
+                    } else {
+                        setLoadingSteps(prev => ({ ...prev, [step.key]: 'error' }));
+                    }
+                } catch (error) {
+                    setLoadingSteps(prev => ({ ...prev, [step.key]: 'error' }));
+                }
+            };
+
+            const handleLoadAll = async () => {
+                for (const step of loadingSequence) {
+                    await handleSingleLoad(step);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            };
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">Data Loading Pipeline</h2>
+                    
+                    <div style={{ marginBottom: '16px', padding: '12px', backgroundColor: '#f0f9ff', border: '1px solid #0ea5e9', borderRadius: '6px' }}>
+                        <div style={{ fontWeight: '600', color: '#0369a1', marginBottom: '4px' }}>ℹ️ One-Time Setup Required</div>
+                        <div style={{ fontSize: '0.9rem', color: '#0369a1' }}>
+                            <strong>Players & Teams:</strong> Only need to be loaded once initially<br />
+                            <strong>Performance Data:</strong> Load for any gameweek to train the ML model
+                        </div>
+                    </div>
+                    
+                    <div className="input-group">
+                        <label htmlFor="gameWeek">Game Week (for performance data):</label>
+                        <input
+                            type="number"
+                            id="gameWeek"
+                            value={gameWeek}
+                            onChange={(e) => setGameWeek(parseInt(e.target.value))}
+                            min="1"
+                            max="38"
+                        />
+                    </div>
+
+                    <button className="btn btn-success" onClick={handleLoadAll}>
+                        Load All Data (Sequential)
+                    </button>
+
+                    <div style={{ marginTop: '20px' }}>
+                        {loadingSequence.map((step, index) => (
+                            <div key={step.key} style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <span style={{ 
+                                    minWidth: '180px', 
+                                    fontWeight: '500',
+                                    color: step.isOneTime ? '#059669' : '#374151'
+                                }}>
+                                    {step.label}:
+                                </span>
+                                <button 
+                                    className="btn"
+                                    onClick={() => handleSingleLoad(step)}
+                                    disabled={loadingSteps[step.key] === 'loading'}
+                                >
+                                    {loadingSteps[step.key] === 'loading' && <span className="loading-spinner"></span>}
+                                    Load
+                                </button>
+                                {loadingSteps[step.key] === 'success' && (
+                                    <span className="status status-success" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>✓ Complete</span>
+                                )}
+                                {loadingSteps[step.key] === 'error' && (
+                                    <span className="status status-error" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>✗ Failed</span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Model Training Component
+        function ModelTrainingSection() {
+            const [isTraining, setIsTraining] = useState(false);
+            const [trainingStatus, setTrainingStatus] = useState('');
+
+            const handleTraining = async () => {
+                setIsTraining(true);
+                setTrainingStatus('');
+                
+                try {
+                    const response = await apiService.trainModel();
+                    if (response.ok) {
+                        const data = await response.json();
+                        setTrainingStatus(`Model trained successfully! ${data.message}`);
+                    } else {
+                        setTrainingStatus('Training failed. Please check if data is loaded.');
+                    }
+                } catch (error) {
+                    setTrainingStatus('Training failed: ' + error.message);
+                } finally {
+                    setIsTraining(false);
+                }
+            };
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">Model Training</h2>
+                    <p style={{ marginBottom: '16px', color: '#6b7280' }}>
+                        Train the ML model using loaded historical data. This process takes approximately 10 minutes.
+                    </p>
+                    
+                    <button 
+                        className="btn btn-success"
+                        onClick={handleTraining}
+                        disabled={isTraining}
+                    >
+                        {isTraining && <span className="loading-spinner"></span>}
+                        {isTraining ? 'Training Model...' : 'Train Model'}
+                    </button>
+
+                    {trainingStatus && (
+                        <div className={`status ${trainingStatus.includes('successfully') ? 'status-success' : 'status-error'}`}>
+                            {trainingStatus}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Predictions Component
+        function PredictionsSection() {
+            const [predictions, setPredictions] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [gameWeek, setGameWeek] = useState(16);
+            const [position, setPosition] = useState('ATT');
+            const [selectedPlayerId, setSelectedPlayerId] = useState('');
+            const [singlePrediction, setSinglePrediction] = useState(null);
+
+            const handleGetPredictions = async () => {
+                setLoading(true);
+                try {
+                    const response = await fetch(`${API_BASE}/prediction/all/${gameWeek}/${position}`);
+                    console.log('Predictions response status:', response.status);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Predictions data:', data);
+                        setPredictions(data || []);
+                    } else {
+                        console.error('API response not ok:', response.status, response.statusText);
+                        setPredictions([]);
+                    }
+                } catch (error) {
+                    console.error('Failed to get predictions:', error);
+                    setPredictions([]);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleGetSinglePrediction = async () => {
+                if (!selectedPlayerId) return;
+                
+                setLoading(true);
+                console.log(`Attempting to get prediction for player ${selectedPlayerId} in gameweek ${gameWeek}`);
+                
+                try {
+                    const url = `${API_BASE}/prediction/${selectedPlayerId}/${gameWeek}`;
+                    console.log('Request URL:', url);
+                    
+                    const response = await apiService.fetchWithCors(url);
+                    console.log('Single prediction response status:', response.status);
+                    console.log('Response headers:', [...response.headers.entries()]);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Single prediction data:', data);
+                        setSinglePrediction(data);
+                    } else {
+                        const errorText = await response.text();
+                        console.error('API response not ok:', response.status, response.statusText, errorText);
+                        setSinglePrediction({ error: `API Error: ${response.status} - ${errorText}` });
+                    }
+                } catch (error) {
+                    console.error('Failed to get single prediction:', error);
+                    console.error('Error details:', {
+                        message: error.message,
+                        stack: error.stack,
+                        name: error.name
+                    });
+                    setSinglePrediction({ error: `Network Error: ${error.message}` });
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="card" style={{ gridColumn: '1 / -1' }}>
+                    <h2 className="card-title">Fantasy Point Predictions</h2>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                        <div>
+                            <div className="input-group">
+                                <label htmlFor="predGameWeek">Game Week:</label>
+                                <input
+                                    type="number"
+                                    id="predGameWeek"
+                                    value={gameWeek}
+                                    onChange={(e) => setGameWeek(parseInt(e.target.value))}
+                                    min="1"
+                                    max="38"
+                                />
+                            </div>
+                            
+                            <div className="input-group">
+                                <label htmlFor="position">Position:</label>
+                                <select
+                                    id="position"
+                                    value={position}
+                                    onChange={(e) => setPosition(e.target.value)}
+                                >
+                                    <option value="GK">Goalkeeper (GK)</option>
+                                    <option value="DEF">Defender (DEF)</option>
+                                    <option value="MID">Midfielder (MID)</option>
+                                    <option value="ATT">Attacker (ATT)</option>
+                                </select>
+                            </div>
+                            
+                            <button 
+                                className="btn"
+                                onClick={handleGetPredictions}
+                                disabled={loading}
+                            >
+                                {loading && <span className="loading-spinner"></span>}
+                                Get Top Predictions
+                            </button>
+                        </div>
+
+                        <div>
+                            <div className="input-group">
+                                <label htmlFor="playerId">Player ID (Single Prediction):</label>
+                                <input
+                                    type="number"
+                                    id="playerId"
+                                    value={selectedPlayerId}
+                                    onChange={(e) => setSelectedPlayerId(e.target.value)}
+                                    placeholder="Enter player ID"
+                                />
+                            </div>
+                            
+                            <button 
+                                className="btn"
+                                onClick={handleGetSinglePrediction}
+                                disabled={loading || !selectedPlayerId}
+                            >
+                                Get Single Prediction
+                            </button>
+                        </div>
+                    </div>
+
+                    {singlePrediction && !singlePrediction.error && (
+                        <div className="prediction-card" style={{ marginBottom: '20px' }}>
+                            <div className="prediction-header">
+                                <span className="player-name">
+                                    {singlePrediction.playerFirstName || singlePrediction.firstName || 'Unknown'} {singlePrediction.playerSecondName || singlePrediction.secondName || 'Player'}
+                                </span>
+                                <span className="predicted-points">
+                                    {singlePrediction.predictedPoints?.toFixed(1) || singlePrediction.points?.toFixed(1) || 'N/A'} pts
+                                </span>
+                            </div>
+                            <div className="player-details">
+                                Price: £{singlePrediction.price?.toFixed(1) || 'N/A'}m | Player ID: {singlePrediction.playerId || selectedPlayerId}
+                            </div>
+                            <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>
+                                Raw data: {JSON.stringify(singlePrediction)}
+                            </div>
+                        </div>
+                    )}
+
+                    {singlePrediction && singlePrediction.error && (
+                        <div className="status status-error" style={{ marginBottom: '20px' }}>
+                            Error loading prediction: {singlePrediction.error}
+                        </div>
+                    )}
+
+                    {predictions.length > 0 && (
+                        <div>
+                            <h3 style={{ marginBottom: '16px' }}>Top {position} Predictions for Gameweek {gameWeek}</h3>
+                            <div className="predictions-grid">
+                                {predictions.slice(0, 12).map((prediction) => (
+                                    <div key={prediction.playerId} className="prediction-card">
+                                        <div className="prediction-header">
+                                            <span className="player-name">
+                                                {prediction.playerFirstName} {prediction.playerSecondName}
+                                            </span>
+                                            <span className="predicted-points">
+                                                {prediction.predictedPoints?.toFixed(1)} pts
+                                            </span>
+                                        </div>
+                                        <div className="player-details">
+                                            Price: £{prediction.price?.toFixed(1)}m | ID: {prediction.playerId}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Data Overview Component
+        function DataOverviewSection() {
+            const [players, setPlayers] = useState([]);
+            const [teams, setTeams] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [showTeamsList, setShowTeamsList] = useState(false);
+
+            const loadData = async () => {
+                setLoading(true);
+                try {
+                    const [playersData, teamsData] = await Promise.all([
+                        apiService.getPlayers().catch(() => []),
+                        apiService.getTeams().catch(() => [])
+                    ]);
+                    setPlayers(playersData);
+                    setTeams(teamsData);
+                } catch (error) {
+                    console.error('Failed to load data overview:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            useEffect(() => {
+                loadData();
+            }, []);
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">Data Overview</h2>
+                    
+                    <button className="btn" onClick={loadData} disabled={loading}>
+                        {loading && <span className="loading-spinner"></span>}
+                        Refresh Data
+                    </button>
+
+                    <div style={{ marginTop: '16px' }}>
+                        <div style={{ marginBottom: '12px' }}>
+                            <strong>Players Loaded:</strong> {players.length}
+                        </div>
+                        <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span><strong>Teams Loaded:</strong> {teams.length}</span>
+                            {teams.length > 0 && (
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowTeamsList(!showTeamsList)}
+                                    style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                                >
+                                    {showTeamsList ? 'Hide Teams' : 'Show Teams'}
+                                </button>
+                            )}
+                        </div>
+                        
+                        {players.length > 0 && (
+                            <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '12px' }}>
+                                Sample players: {players.slice(0, 3).map(p => `${p.firstName} ${p.secondName}`).join(', ')}
+                                {players.length > 3 && '...'}
+                            </div>
+                        )}
+
+                        {showTeamsList && teams.length > 0 && (
+                            <div style={{ marginTop: '16px' }}>
+                                <h4 style={{ marginBottom: '12px', color: '#4f46e5' }}>Current Teams:</h4>
+                                <div style={{ 
+                                    display: 'grid', 
+                                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+                                    gap: '8px',
+                                    maxHeight: '300px',
+                                    overflowY: 'auto',
+                                    padding: '8px',
+                                    background: '#f8fafc',
+                                    borderRadius: '6px',
+                                    border: '1px solid #e2e8f0'
+                                }}>
+                                    {teams.map((team, index) => (
+                                        <div key={team.id || index} style={{
+                                            padding: '8px 12px',
+                                            background: 'white',
+                                            borderRadius: '4px',
+                                            border: '1px solid #e5e7eb',
+                                            fontSize: '0.9rem'
+                                        }}>
+                                            <div style={{ fontWeight: '600', color: '#374151' }}>
+                                                {team.name || `Team ${team.id}`}
+                                            </div>
+                                            {team.shortName && (
+                                                <div style={{ color: '#6b7280', fontSize: '0.8rem' }}>
+                                                    {team.shortName}
+                                                </div>
+                                            )}
+                                            <div style={{ color: '#9ca3af', fontSize: '0.75rem' }}>
+                                                ID: {team.id}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [activeTab, setActiveTab] = useState('dashboard');
+
+            const tabs = [
+                { id: 'dashboard', label: 'Dashboard' },
+                { id: 'predictions', label: 'Predictions' },
+                { id: 'comparison', label: 'Player Comparison' },
+            ];
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>🏆 Fantasy Premier League Predictor</h1>
+                        <p>Machine Learning powered player performance predictions and team optimization</p>
+                    </div>
+
+                    <div className="tabs">
+                        {tabs.map(tab => (
+                            <button
+                                key={tab.id}
+                                className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                onClick={() => setActiveTab(tab.id)}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {activeTab === 'dashboard' && (
+                        <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', alignItems: 'start' }}>
+                            <DataLoadingSection />
+                            <ModelTrainingSection />
+                            <DataOverviewSection />
+                        </div>
+                    )}
+
+                    {activeTab === 'predictions' && <PredictionsSection />}
+
+                    {activeTab === 'comparison' && <PlayerComparisonSection />}
+                </div>
+            );
+        }
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
