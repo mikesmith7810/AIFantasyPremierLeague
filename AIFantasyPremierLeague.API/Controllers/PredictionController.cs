@@ -13,9 +13,9 @@ public class PredictionController(IPredictionService predictionService) : Contro
 {
     [HttpGet("all/{gameWeek}/{position}")]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<ActionResult<IEnumerable<PlayerPrediction>>> GetPredictionsForAll(int GameWeek, string Position)
+    public async Task<ActionResult<IEnumerable<PlayerPrediction>>> GetPredictionsForAll(int gameWeek, string position)
     {
-        var playerPrediction = await predictionService.GetPredictionHighestPoints(GameWeek, Position);
+        var playerPrediction = await predictionService.GetPredictionHighestPoints(gameWeek, position);
 
         if (playerPrediction == null)
         {
@@ -27,9 +27,9 @@ public class PredictionController(IPredictionService predictionService) : Contro
 
     [HttpGet("{playerId}/{gameWeek}")]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<ActionResult<PlayerPrediction>> GetPredictionForPlayer(int PlayerId, int GameWeek)
+    public async Task<ActionResult<PlayerPrediction>> GetPredictionForPlayer(int playerId, int gameWeek)
     {
-        var playerPrediction = await predictionService.GetPredictionForPlayer(PlayerId, GameWeek);
+        var playerPrediction = await predictionService.GetPredictionForPlayer(playerId, gameWeek);
 
         if (playerPrediction == null)
         {
